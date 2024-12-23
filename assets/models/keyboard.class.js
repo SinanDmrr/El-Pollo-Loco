@@ -1,10 +1,10 @@
 class KeyboardKey {
     constructor() {
-        this.left = false;
-        this.right = false;
-        this.up = false;
-        this.down = false;
-        this.space = false;
+        this.LEFT = false;
+        this.RIGHT = false;
+        this.UP = false;
+        this.DOWN = false;
+        this.SPACE = false;
     }
 
     keyDown(event) {
@@ -12,25 +12,25 @@ class KeyboardKey {
             case "ArrowUp":
             case "w":
             case "W":
-                this.up = true;
+                this.UP = true;
                 break;
             case "ArrowLeft":
             case "a":
             case "A":
-                this.left = true;
+                this.LEFT = true;
                 break;
             case "ArrowDown":
             case "s":
             case "S":
-                this.down = true;
+                this.DOWN = true;
                 break;
             case "ArrowRight":
             case "d":
             case "D":
-                this.right = true;
+                this.RIGHT = true;
                 break;
             case " ":
-                this.space = true;
+                this.SPACE = true;
                 break;
         }
     }
@@ -40,25 +40,25 @@ class KeyboardKey {
             case "ArrowUp":
             case "w":
             case "W":
-                this.up = false;
+                this.UP = false;
                 break;
             case "ArrowLeft":
             case "a":
             case "A":
-                this.left = false;
+                this.LEFT = false;
                 break;
             case "ArrowDown":
             case "s":
             case "S":
-                this.down = false;
+                this.DOWN = false;
                 break;
             case "ArrowRight":
             case "d":
             case "D":
-                this.right = false;
+                this.RIGHT = false;
                 break;
             case " ":
-                this.space = false;
+                this.SPACE = false;
                 break;
         }
     }
