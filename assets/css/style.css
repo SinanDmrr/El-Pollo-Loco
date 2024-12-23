@@ -1,0 +1,70 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #d4d4d4;
+  cursor: pointer;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  line-height: 1.6;
+  background-color: #ffc493;
+  color: #d4d4d4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+header {
+  background-color: #333333;
+  color: #d4d4d4;
+  padding: 15px;
+  text-align: center;
+  width: 100%;
+}
+header h1 {
+  font-size: 2rem;
+}
+
+main {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #d4d4d4;
+}
+main canvas {
+  background-color: black;
+}
+
+footer {
+  background-color: #333333;
+  color: #d4d4d4;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+}
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+  main {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.2rem;
+  }
+}/*# sourceMappingURL=style.css.map */
