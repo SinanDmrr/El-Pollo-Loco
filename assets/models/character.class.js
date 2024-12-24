@@ -1,6 +1,6 @@
 class Character extends MovableObject {
     x = 50;
-    y = 120;//220 ground
+    y = 220;
     width = 120;
     height = 200;
     currentImage = 0;
@@ -82,37 +82,42 @@ class Character extends MovableObject {
         setInterval(() => {
             if (this.world.keyboard.UP && !this.isAboveGround()) {
                 this.idleTimer = 0; //TODO IDLE
-            }
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+                this.speedY = 20;
+
+            } else if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.idleTimer = 0; //TODO IDLE
                 this.x += this.speed;
                 this.otherDirection = false;
-                this.world.soundManager.play('walking');
+
             } else if (this.world.keyboard.LEFT && this.x > this.world.level.level_begin_x) {
                 this.idleTimer = 0; //TODO IDLE
                 this.x -= this.speed;
                 this.otherDirection = true;
-                this.world.soundManager.play('walking');
             } else {
-                this.world.soundManager.stop('walking');
+
                 this.idleTimer++; //TODO IDLE
             }
+
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
         setInterval(() => {
             if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
-            }
-            if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+                this.world.soundManager.play('jumping');
+            } else if (this.world.keyboard.RIGHT && !this.isAboveGround() || this.world.keyboard.LEFT && !this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_WALKING);
+                this.world.soundManager.play('walking');
             }
             // TODO IDLE IMPLEMENTIERUNG WENN SPÄTER ANDERS GELÖST WIRD HIER ÄNDERN
             else {
+                this.world.soundManager.stop('walking');
+                this.world.soundManager.stop('jumping');
                 if (this.idleTimer < this.idleSleep) {
                     this.playAnimation(this.IMAGES_IDLE);
                 } else {
                     this.playAnimation(this.IMAGES_IDLE_LONG);
+
                 }
             }
         }, 150);

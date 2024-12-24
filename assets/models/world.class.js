@@ -14,6 +14,8 @@ class World {
         this.draw();
         this.setWorld();
         this.soundManager.loadSound('walking', 'assets/sounds/walking.mp3');
+        this.soundManager.loadSound('jumping', 'assets/sounds/jump.mp3');
+        this.soundManager.setVolume('jumping', 0.1)
     }
 
     setWorld() {
