@@ -1,5 +1,5 @@
 class Character extends MovableObject {
-    x = 50;
+    x = -50;
     y = 220;
     width = 120;
     height = 200;
@@ -82,19 +82,17 @@ class Character extends MovableObject {
         setInterval(() => {
             if (this.world.keyboard.UP && !this.isAboveGround()) {
                 this.idleTimer = 0; //TODO IDLE
-                this.speedY = 20;
+                this.jump();
 
             } else if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.idleTimer = 0; //TODO IDLE
-                this.x += this.speed;
+                this.moveRight();
                 this.otherDirection = false;
-
             } else if (this.world.keyboard.LEFT && this.x > this.world.level.level_begin_x) {
                 this.idleTimer = 0; //TODO IDLE
-                this.x -= this.speed;
+                this.moveLeft();
                 this.otherDirection = true;
             } else {
-
                 this.idleTimer++; //TODO IDLE
             }
 
@@ -121,9 +119,5 @@ class Character extends MovableObject {
                 }
             }
         }, 150);
-    }
-
-    jump() {
-        console.log('Jumping');
     }
 }
