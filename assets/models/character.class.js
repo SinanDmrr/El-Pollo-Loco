@@ -1,11 +1,14 @@
 class Character extends MovableObject {
     x = -50;
+    offsetX = 20;
     y = 220;
     width = 120;
+    offsetWidth = 50;
     height = 200;
     currentImage = 0;
     world;
     speed = 7;
+    deadAnimation = false;
     //TODO IDLE
     idleTimer = 0;
     idleSleep = 60 * 5; // Weil 1000/60 die Intervaldauer ist wird hier mit gewährleistet das alle 5 Sekunden die Sleep Idle triggert
@@ -29,12 +32,12 @@ class Character extends MovableObject {
         'assets/img/3_jump/J-38.png',
         'assets/img/3_jump/J-39.png'
     ];
-    imgHurtCharacter = [
+    IMAGES_HURT = [
         'assets/img/4_hurt/H-41.png',
         'assets/img/4_hurt/H-42.png',
         'assets/img/4_hurt/H-43.png'
     ];
-    imgDeadCharacter = [
+    IMAGES_DEAD = [
         'assets/img/5_dead/D-51.png',
         'assets/img/5_dead/D-52.png',
         'assets/img/5_dead/D-53.png',
@@ -74,6 +77,8 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_IDLE_LONG);
+        this.loadImages(this.IMAGES_HURT);
+        this.loadImages(this.IMAGES_DEAD);
         this.animate();
         this.applyGravity();
     }
@@ -100,7 +105,11 @@ class Character extends MovableObject {
         }, 1000 / 60);
 
         setInterval(() => {
-            if (this.isAboveGround()) {
+            if (this.isDead()) {
+                this.playAnimation(this.IMAGES_DEAD);
+            } else if (this.isHurt()) {
+                this.playAnimation(this.IMAGES_HURT);
+            } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
                 this.world.soundManager.play('jumping');
             } else if (this.world.keyboard.RIGHT && !this.isAboveGround() || this.world.keyboard.LEFT && !this.isAboveGround()) {
