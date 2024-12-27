@@ -28,6 +28,11 @@ class World {
         this.soundManager.loadSound('jumping', 'assets/sounds/jump.mp3');
         this.soundManager.setVolume('jumping', 0.1)
         this.soundManager.loadSound('throw', 'assets/sounds/throw.mp3');
+        this.soundManager.loadSound('backgroundmusic', 'assets/sounds/background_music.mp3');
+        this.soundManager.loadSound('chicken', 'assets/sounds/chicken.mp3');
+        this.soundManager.loadSound('game_win', 'assets/sounds/game_win.mp3');
+        this.soundManager.loadSound('game_lose', 'assets/sounds/game_lose.mp3');
+        this.soundManager.loadSound('boss_chicken_start', 'assets/sounds/boss_chicken_start.mp3');
     }
 
     setWorld() {
