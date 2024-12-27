@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "Zabars";
+  src: url("assets/fonts/Zabars.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 *,
 *::before,
 *::after {
@@ -33,18 +39,27 @@ header {
   width: 100%;
 }
 header h1 {
+  font-family: "Zabras";
   font-size: 2rem;
 }
 
 main {
   flex-grow: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   color: #d4d4d4;
 }
 main canvas {
   background-color: black;
+  border-radius: 1rem;
+}
+main .instruction {
+  color: #333333;
+}
+main .instruction ul {
+  list-style-type: none;
 }
 
 footer {
