@@ -32,15 +32,8 @@ class Chicken extends MovableObject {
                 animationFrameCounter = 0;
             }
 
-            requestAnimationFrame(animateFrame); // Nächsten Frame anfordern
+            requestAnimationFrame(animateFrame);
         };
-        animateFrame(); // Start der Animation
+        animateFrame();
     }
-
-    // animate() {
-    //     setInterval(() => {
-    //         this.moveLeft(this.speed);
-    //         this.playAnimation(this.IMAGES_WALKING);
-    //     }, 150);
-    // }
 }

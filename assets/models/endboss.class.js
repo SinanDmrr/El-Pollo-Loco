@@ -36,7 +36,7 @@ class Endboss extends MovableObject {
         let animationFrameCounter = 0;
 
         const animateFrame = () => {
-            this.moveLeft(this.speed);
+            // this.moveLeft(this.speed);
             animationFrameCounter++;
 
             if (animationFrameCounter > 16) {

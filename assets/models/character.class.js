@@ -9,9 +9,8 @@ class Character extends MovableObject {
     world;
     speed = 7;
     deadAnimation = false;
-    //TODO IDLE
     idleTimer = 0;
-    idleSleep = 60 * 5; // Weil 1000/60 die Intervaldauer ist wird hier mit gewährleistet das alle 5 Sekunden die Sleep Idle triggert
+    idleSleep = 60 * 5;
 
     IMAGES_WALKING = [
         'assets/img/2_walk/W-21.png',
@@ -86,25 +85,25 @@ class Character extends MovableObject {
     animate() {
         setInterval(() => {
             if (this.world.keyboard.UP && !this.isAboveGround()) {
-                this.idleTimer = 0; //TODO IDLE
+                this.idleTimer = 0;
                 this.jump();
 
             } else if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.idleTimer = 0; //TODO IDLE
+                this.idleTimer = 0;
                 this.moveRight();
                 this.otherDirection = false;
             } else if (this.world.keyboard.LEFT && this.x > this.world.level.level_begin_x) {
-                this.idleTimer = 0; //TODO IDLE
+                this.idleTimer = 0;
                 this.moveLeft();
                 this.otherDirection = true;
             } else {
-                this.idleTimer++; //TODO IDLE
+                this.idleTimer++;
             }
 
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
-        setInterval(() => {
+        const characterInterval = setInterval(() => {
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
             } else if (this.isHurt()) {
@@ -116,7 +115,6 @@ class Character extends MovableObject {
                 this.playAnimation(this.IMAGES_WALKING);
                 this.world.soundManager.play('walking');
             }
-            // TODO IDLE IMPLEMENTIERUNG WENN SPÄTER ANDERS GELÖST WIRD HIER ÄNDERN
             else {
                 this.world.soundManager.stop('walking');
                 this.world.soundManager.stop('jumping');

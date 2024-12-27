@@ -1,37 +1,64 @@
 class World {
+    healthBar = new Statusbar();
+    coinBar = new Statusbar('coin', 40);
+    bottleBar = new Statusbar('bottle', 80);
     character = new Character();
+    throwableObject = [];
+
     level = level1;
     canvas;
     ctx;
     keyboard;
+    soundManager;
     camera_x = -100;
-    soundManager = new SoundManager();
 
-    constructor(canvas, keyboard) {
+    constructor(canvas, keyboard, soundManager) {
         this.ctx = canvas.getContext('2d');
         this.keyboard = keyboard;
+        this.soundManager = soundManager;
         this.canvas = canvas
         this.draw();
         this.setWorld();
-        this.checkCollisions();
+        this.run();
+        this.loadSound();
+    }
+
+    loadSound() {
         this.soundManager.loadSound('walking', 'assets/sounds/walking.mp3');
         this.soundManager.loadSound('jumping', 'assets/sounds/jump.mp3');
         this.soundManager.setVolume('jumping', 0.1)
+        this.soundManager.loadSound('throw', 'assets/sounds/throw.mp3');
     }
 
     setWorld() {
         this.character.world = this;
     }
 
-    checkCollisions() {
+    run() {
         setInterval(() => {
-            this.level.enemies.forEach((enemy) => {
-                if (this.character.isColliding(enemy)) {
-                    this.character.hit(5);
-                    console.log("Collision with Enemy, your Energy is now: ", this.character.energy);
+            this.checkCollisions();
+            this.checkThrowObjects();
+        }, 200)
+    }
+
+    checkCollisions() {
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isColliding(enemy)) {
+                if (enemy instanceof Endboss) {
+                    this.character.hit(40);
+                } else {
+                    this.character.hit(20);
                 }
-            })
-        }, 200);
+                this.healthBar.setPercentage(this.character.energy);
+            }
+        })
+    }
+
+    checkThrowObjects() {
+        if (this.keyboard.SPACE) {
+            let bottle = new ThrowableObject(this.character.x, this.character.y);
+            this.throwableObject.push(bottle);
+        }
     }
 
     draw() {
@@ -41,11 +68,18 @@ class World {
 
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
+
+        this.ctx.translate(-this.camera_x, 0);
+        this.addToMap(this.healthBar);
+        this.addToMap(this.coinBar);
+        this.addToMap(this.bottleBar);
+        this.ctx.translate(this.camera_x, 0);
+
         this.addToMap(this.character);
+        this.addObjectsToMap(this.throwableObject);
         this.addObjectsToMap(this.level.enemies);
 
         this.ctx.translate(-this.camera_x, 0);
-
         requestAnimationFrame(() => {
             this.draw()
         });

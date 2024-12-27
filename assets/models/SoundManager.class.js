@@ -8,6 +8,10 @@ class SoundManager {
         SoundManager.instance = this;
     }
 
+    static getInstance() {
+        return SoundManager.instance || new SoundManager();
+    }
+
     loadSound(name, src) {
         const sound = new Audio(src);
         sound.volume = 0.5;

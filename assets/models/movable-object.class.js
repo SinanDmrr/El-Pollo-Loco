@@ -13,21 +13,6 @@ class MovableObject extends DrawableObject {
         this.currentImage++;
     }
 
-    drawCollisonBorder(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
-            ctx.beginPath();
-            ctx.lineWidth = '5';
-            ctx.strokeStyle = 'blue';
-
-            if (this instanceof Character) {
-                ctx.rect(this.x + this.offsetX, this.y, this.width - this.offsetWidth, this.height);
-            } else {
-                ctx.rect(this.x, this.y, this.width, this.height);
-            }
-            ctx.stroke();
-        }
-    }
-
     moveRight() {
         this.x += this.speed;
     }
@@ -47,7 +32,11 @@ class MovableObject extends DrawableObject {
     }
 
     isAboveGround() {
-        return this.y < 220
+        if (this instanceof ThrowableObject) {
+            return true;
+        } else {
+            return this.y < 220
+        }
     }
 
     jump() {
