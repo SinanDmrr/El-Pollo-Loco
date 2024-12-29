@@ -1,9 +1,9 @@
 class Character extends MovableObject {
-    x = -50;
+    x = -150;
     offsetX = 20;
     y = 220;
     width = 120;
-    offsetWidth = 50;
+    offsetWidth = 40;
     height = 200;
     currentImage = 0;
     world;
@@ -11,6 +11,7 @@ class Character extends MovableObject {
     deadAnimation = false;
     idleTimer = 0;
     idleSleep = 60 * 5;
+
 
     IMAGES_WALKING = [
         'assets/img/2_walk/W-21.png',
@@ -83,7 +84,8 @@ class Character extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
+        const intervalMove = setInterval(() => {
+            intervalIds.push(intervalMove);
             if (this.world.keyboard.UP && !this.isAboveGround()) {
                 this.idleTimer = 0;
                 this.jump();
@@ -103,9 +105,12 @@ class Character extends MovableObject {
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
-        const characterInterval = setInterval(() => {
+        const intervalAnimate = setInterval(() => {
+            intervalIds.push(intervalAnimate);
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
+                this.world.stopGame();
+
             } else if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT);
             } else if (this.isAboveGround()) {
@@ -122,7 +127,6 @@ class Character extends MovableObject {
                     this.playAnimation(this.IMAGES_IDLE);
                 } else {
                     this.playAnimation(this.IMAGES_IDLE_LONG);
-
                 }
             }
         }, 150);

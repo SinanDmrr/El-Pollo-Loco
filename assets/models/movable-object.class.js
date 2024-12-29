@@ -43,31 +43,103 @@ class MovableObject extends DrawableObject {
         this.speedY = 19;
     }
 
-    isColliding(mo) {
-        return (this.x + this.offsetX) + (this.width - this.offsetWidth) >= mo.x &&
-            this.y + this.height >= mo.y &&
-            this.x <= mo.x &&
-            this.y <= mo.y + mo.height
+    isCollidingFromTop(mo) {
+        // Berechnung der Grenzen des aktuellen Charakters
+        const characterLeft = this.x + this.offsetX;
+        const characterRight = characterLeft + (this.width - this.offsetWidth);
+        const characterTop = this.y;
+        const characterBottom = this.y + this.height;
+
+        // Berechnung der Grenzen des kollidierenden Objekts (mo)
+        const moLeft = mo.x;
+        const moRight = mo.x + mo.width;
+        const moTop = mo.y;
+
+        // Überprüfen, ob die Kollision von oben kommt
+        return (
+            characterRight > moLeft &&
+            characterLeft < moRight &&
+            characterBottom > moTop &&
+            characterTop < moTop &&
+            characterBottom < 420 // Bedingung für den Boden
+        );
     }
+
+    isColliding(mo) {
+        const characterLeft = this.x + this.offsetX;
+        const characterRight = characterLeft + (this.width - this.offsetWidth);
+        const characterTop = this.y;
+        const characterBottom = this.y + this.height;
+
+        const moLeft = mo.x;
+        const moRight = mo.x + mo.width;
+        const moTop = mo.y;
+        const moBottom = mo.y + mo.height;
+
+        return (
+            characterRight > moLeft &&
+            characterLeft < moRight &&
+            characterBottom > moTop &&
+            characterTop < moBottom
+        );
+    }
+
+
+    // isColliding(mo) {
+    //     // Berechnung der Grenzen des aktuellen Charakters
+    //     const characterLeft = this.x + this.offsetX;
+    //     const characterRight = characterLeft + (this.width - this.offsetWidth);
+    //     const characterTop = this.y;
+    //     const characterBottom = this.y + this.height;
+
+    //     // Berechnung der Grenzen des kollidierenden Objekts (mo)
+    //     const moLeft = mo.x;
+    //     const moRight = mo.x + mo.width;
+    //     const moTop = mo.y;
+    //     const moBottom = mo.y + mo.height;
+
+    //     // Überprüfen, ob die Kollision stattgefunden hat
+    //     if (characterRight > moLeft && characterLeft < moRight && characterBottom > moTop && characterTop < moBottom) {
+
+    //         // Zuerst prüfen, ob die Kollision von oben kommt
+    //         if (characterBottom > moTop && characterTop < moTop && characterBottom < 420) {
+    //             console.log("Kollision von oben");
+    //             return true; // Nur obere Kollision wird erkannt
+    //         }
+
+    //         // Kollision von links oder rechts nur, wenn keine obere Kollision vorliegt
+    //         if (characterRight > moLeft && characterLeft < moLeft) {
+    //             console.log("Kollision von links");
+    //         } else if (characterLeft < moRight && characterRight > moRight) {
+    //             console.log("Kollision von rechts");
+    //         }
+
+    //         return true; // Seitliche Kollision wird erkannt, falls keine obere Kollision
+    //     }
+
+    //     return false; // Keine Kollision
+    // }
 
     hit(dmg) {
         if (this.energy <= 0) {
             this.energy = 0;
-        } else {
+        } else if (!this.isHurt()) {
             this.timeAtLastHit = new Date().getTime();
-            if (this.isHurt()) {
-                this.energy -= dmg;
-            }
+            this.energy -= dmg;
         }
     }
 
     isHurt() {
-        let timepassed = new Date().getTime() - this.timeAtLastHit;
-        timepassed = timepassed / 1000;
-        return timepassed < 1;
+        let timePassed = new Date().getTime() - this.timeAtLastHit;
+        timePassed = timePassed / 1000;
+        return timePassed < 2;
     }
 
     isDead() {
-        return this.energy == 0;
+        return this.energy <= 0;
+    }
+
+    clearAllIntervals() {
+        for (let i = 1; i < 1000; i++) window.clearInterval(i);
     }
 }

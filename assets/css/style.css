@@ -22,7 +22,8 @@ a {
 body {
   font-family: "Arial", sans-serif;
   line-height: 1.6;
-  background-color: #ffc493;
+  background-image: url("../img/main_background/cactus.png");
+  background-position: center;
   color: #d4d4d4;
   display: flex;
   flex-direction: column;
@@ -32,15 +33,17 @@ body {
 }
 
 header {
-  background-color: #333333;
-  color: #d4d4d4;
-  padding: 15px;
+  background: linear-gradient(0deg, #b05749, #e68956, #b05749);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px whitesmoke;
+  color: #333333;
   text-align: center;
   width: 100%;
 }
 header h1 {
   font-family: "Zabras";
-  font-size: 2rem;
+  font-size: 7rem;
 }
 
 main {
@@ -56,14 +59,14 @@ main canvas {
   border-radius: 1rem;
 }
 main .instruction {
-  color: #333333;
+  color: #d4d4d4;
 }
 main .instruction ul {
   list-style-type: none;
 }
 
 footer {
-  background-color: #333333;
+  background-color: rgba(51, 51, 51, 0.4);
   color: #d4d4d4;
   width: 100%;
   text-align: center;

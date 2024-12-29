@@ -3,7 +3,7 @@ class DrawableObject {
     imgCache = {};
     currentImage = 0;
     x = 120;
-    y = 200;
+    y = 220;
     height = 150;
     width = 100;
 
@@ -38,5 +38,4 @@ class DrawableObject {
             ctx.stroke();
         }
     }
-
 }

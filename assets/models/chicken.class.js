@@ -4,7 +4,7 @@ class Chicken extends MovableObject {
     width = 60;
     height = 60;
     currentImage = 0;
-    speed = 0.1;
+    speed = 1;
 
     IMAGES_WALKING = [
         'assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
@@ -15,7 +15,7 @@ class Chicken extends MovableObject {
     constructor() {
         super().loadImage('assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png');
         this.loadImages(this.IMAGES_WALKING)
-        this.speed = this.speed + Math.random() * 0.5
+        this.speed = this.speed + Math.random() * 2
         this.animate();
 
     }
@@ -23,17 +23,16 @@ class Chicken extends MovableObject {
     animate() {
         let animationFrameCounter = 0;
 
-        const animateFrame = () => {
-            this.moveLeft(this.speed);
+        const intervalChicken = setInterval(() => {
+            intervalIds.push(intervalChicken);
+            this.moveLeft(this.speed); // Bewegung nach links
+
             animationFrameCounter++;
 
             if (animationFrameCounter > 11) {
-                this.playAnimation(this.IMAGES_WALKING);
-                animationFrameCounter = 0;
+                this.playAnimation(this.IMAGES_WALKING); // Animation der Bilder
+                animationFrameCounter = 0; // Zähler zurücksetzen
             }
-
-            requestAnimationFrame(animateFrame);
-        };
-        animateFrame();
+        }, 1000 / 60); // 60 FPS-ähnliches Verhalten
     }
 }

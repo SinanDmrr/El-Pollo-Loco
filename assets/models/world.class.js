@@ -21,14 +21,18 @@ class World {
         this.setWorld();
         this.run();
         this.loadSound();
+        // this.soundManager.play('backgroundmusic');
+        // this.soundManager.loop('backgroundmusic', true);
+        this.spawnChicken();
     }
 
     loadSound() {
         this.soundManager.loadSound('walking', 'assets/sounds/walking.mp3');
         this.soundManager.loadSound('jumping', 'assets/sounds/jump.mp3');
-        this.soundManager.setVolume('jumping', 0.1)
+        this.soundManager.setVolume('jumping', 0.1);
         this.soundManager.loadSound('throw', 'assets/sounds/throw.mp3');
         this.soundManager.loadSound('backgroundmusic', 'assets/sounds/background_music.mp3');
+        this.soundManager.setVolume('backgroundmusic', 0.2);
         this.soundManager.loadSound('chicken', 'assets/sounds/chicken.mp3');
         this.soundManager.loadSound('game_win', 'assets/sounds/game_win.mp3');
         this.soundManager.loadSound('game_lose', 'assets/sounds/game_lose.mp3');
@@ -39,16 +43,40 @@ class World {
         this.character.world = this;
     }
 
+    //TODO über x >= 1200 spawnt Endgegner außerhalb des sichtbereichs und kommt rein gelaufen
+    spawnChicken() {
+        const spawnInterval = setInterval(() => {
+            if (this.character.x >= 1200 || world.character.isDead()) {
+                console.log("Spawning beendet!");
+                clearInterval(spawnInterval);
+                return;
+            }
+            const newChicken = new Chicken();
+            this.level.enemies.push(newChicken);
+            console.log("Neues Chicken gespawnt. Aktuelle Anzahl:", this.level.enemies.length);
+        }, 2000);
+    }
+
+
+    stopGame() {
+        this.soundManager.stopAll();
+        intervalIds.forEach((interval) => {
+            clearInterval(interval);
+        });
+    }
+
     run() {
         setInterval(() => {
             this.checkCollisions();
             this.checkThrowObjects();
-        }, 200)
+        }, 100)
     }
 
     checkCollisions() {
-        this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy)) {
+        this.level.enemies.forEach((enemy, index) => {
+            if (this.character.isCollidingFromTop(enemy)) {
+                this.level.enemies.splice(index, 1);
+            } else if (this.character.isColliding(enemy)) {
                 if (enemy instanceof Endboss) {
                     this.character.hit(40);
                 } else {
@@ -56,7 +84,7 @@ class World {
                 }
                 this.healthBar.setPercentage(this.character.energy);
             }
-        })
+        });
     }
 
     checkThrowObjects() {
@@ -99,6 +127,7 @@ class World {
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
+
     };
 
     addObjectsToMap(objects) {
