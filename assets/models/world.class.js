@@ -87,12 +87,34 @@ class World {
         });
     }
 
+    // checkThrowObjects() {
+    //     if (this.keyboard.SPACE) {
+    //         let bottle = new ThrowableObject(this.character.x, this.character.y);
+    //         this.throwableObject.push(bottle);
+    //     }
+    // }
+
     checkThrowObjects() {
+        this.throwableObject.forEach((bottle, bottleIndex) => {
+            this.level.enemies.forEach((enemy, enemyIndex) => {
+                if (bottle.isColliding(enemy)) {
+                    if (enemy instanceof Endboss) {
+                        enemy.hit(20); // Endboss nimmt 20 Schaden
+                    } else {
+                        this.level.enemies.splice(enemyIndex, 1); // Normaler Gegner wird entfernt
+                    }
+                    this.throwableObject.splice(bottleIndex, 1); // Flasche wird entfernt
+                }
+            });
+        });
+
+        // Wurfobjekt erstellen, wenn SPACE gedrückt wird
         if (this.keyboard.SPACE) {
             let bottle = new ThrowableObject(this.character.x, this.character.y);
             this.throwableObject.push(bottle);
         }
     }
+
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

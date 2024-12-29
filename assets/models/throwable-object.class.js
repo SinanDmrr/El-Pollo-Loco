@@ -19,4 +19,13 @@ class ThrowableObject extends MovableObject {
             this.x += this.speedX
         }, 30);
     }
+
+    isColliding(enemy) {
+        return (
+            this.x + this.width > enemy.x &&
+            this.x < enemy.x + enemy.width &&
+            this.y + this.height > enemy.y &&
+            this.y < enemy.y + enemy.height
+        );
+    }
 }

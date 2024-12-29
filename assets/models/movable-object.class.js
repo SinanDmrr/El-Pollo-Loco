@@ -84,42 +84,6 @@ class MovableObject extends DrawableObject {
         );
     }
 
-
-    // isColliding(mo) {
-    //     // Berechnung der Grenzen des aktuellen Charakters
-    //     const characterLeft = this.x + this.offsetX;
-    //     const characterRight = characterLeft + (this.width - this.offsetWidth);
-    //     const characterTop = this.y;
-    //     const characterBottom = this.y + this.height;
-
-    //     // Berechnung der Grenzen des kollidierenden Objekts (mo)
-    //     const moLeft = mo.x;
-    //     const moRight = mo.x + mo.width;
-    //     const moTop = mo.y;
-    //     const moBottom = mo.y + mo.height;
-
-    //     // Überprüfen, ob die Kollision stattgefunden hat
-    //     if (characterRight > moLeft && characterLeft < moRight && characterBottom > moTop && characterTop < moBottom) {
-
-    //         // Zuerst prüfen, ob die Kollision von oben kommt
-    //         if (characterBottom > moTop && characterTop < moTop && characterBottom < 420) {
-    //             console.log("Kollision von oben");
-    //             return true; // Nur obere Kollision wird erkannt
-    //         }
-
-    //         // Kollision von links oder rechts nur, wenn keine obere Kollision vorliegt
-    //         if (characterRight > moLeft && characterLeft < moLeft) {
-    //             console.log("Kollision von links");
-    //         } else if (characterLeft < moRight && characterRight > moRight) {
-    //             console.log("Kollision von rechts");
-    //         }
-
-    //         return true; // Seitliche Kollision wird erkannt, falls keine obere Kollision
-    //     }
-
-    //     return false; // Keine Kollision
-    // }
-
     hit(dmg) {
         if (this.energy <= 0) {
             this.energy = 0;
