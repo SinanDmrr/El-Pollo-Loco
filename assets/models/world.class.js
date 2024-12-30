@@ -83,8 +83,13 @@ class World {
     checkCollisions() {
         this.level.enemies.forEach((enemy, index) => {
             if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken) {
-                this.level.enemies.splice(index, 1);
-            } else if (this.character.isColliding(enemy)) {
+                enemy.img = enemy.IMAGE_DEAD;
+                enemy.loadImage(enemy.IMAGE_DEAD);
+                enemy.isDead = true;
+                setTimeout(() => {
+                    this.level.enemies.splice(index, 1);
+                }, 500)
+            } else if (this.character.isColliding(enemy) && !enemy.isDead) {
                 if (enemy instanceof Endboss) {
                     this.character.hit(40);
                 } else {
@@ -104,7 +109,6 @@ class World {
             this.hasThrown = false;
         }
 
-        // Kollisionen prüfen
         this.throwableObject.forEach((bottle, bottleIndex) => {
             this.level.enemies.forEach((enemy, enemyIndex) => {
                 if (bottle.isColliding(enemy)) {
@@ -113,12 +117,12 @@ class World {
                         console.log("Endboss getroffen! Energie: ", enemy.energy);
                         if (enemy.isDead()) {
                             console.log("Endboss besiegt!");
-                            this.level.enemies.splice(enemyIndex, 1); // Endboss entfernen
+                            this.level.enemies.splice(enemyIndex, 1);
                         }
                     } else {
-                        this.level.enemies.splice(enemyIndex, 1); // Chicken entfernen
+                        this.level.enemies.splice(enemyIndex, 1);
                     }
-                    this.throwableObject.splice(bottleIndex, 1); // Flasche entfernen
+                    this.throwableObject.splice(bottleIndex, 1);
                 }
             });
         });
