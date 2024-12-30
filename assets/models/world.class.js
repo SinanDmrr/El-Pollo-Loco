@@ -11,6 +11,7 @@ class World {
     keyboard;
     soundManager;
     camera_x = -100;
+    lastCollectableSpawnX;
 
     constructor(canvas, keyboard, soundManager) {
         this.ctx = canvas.getContext('2d');
@@ -24,6 +25,7 @@ class World {
         // this.soundManager.play('backgroundmusic');
         // this.soundManager.loop('backgroundmusic', true);
         this.spawnChicken();
+        this.spawnInitialCollectables();
     }
 
     loadSound() {
@@ -64,18 +66,48 @@ class World {
         }, 2000);
     }
 
-    stopGame() {
-        this.soundManager.stopAll();
-        intervalIds.forEach((interval) => {
-            clearInterval(interval);
-        });
+    spawnInitialCollectables() {
+        this.lastCollectableSpawnX = this.character.x + 650;
+        this.spawnCollectablesAtPosition(this.lastCollectableSpawnX);
+    }
+
+    spawnCollectablesAtPosition(x) {
+        const baseX = x;
+        const baseY = 300;
+        const gap = 50;
+
+        const collectables = [
+            new CollectableObject('assets/img/8_coin/coin_1.png', baseX, baseY, 100, 100),
+            new CollectableObject('assets/img/8_coin/coin_1.png', baseX + gap, baseY, 100, 100),
+            new CollectableObject('assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png', baseX + gap * 2.3, baseY, 70, 70),
+            new CollectableObject('assets/img/8_coin/coin_1.png', baseX + gap * 3, baseY, 100, 100),
+            new CollectableObject('assets/img/8_coin/coin_1.png', baseX + gap * 4, baseY, 100, 100),
+        ];
+
+        this.level.collectables.push(...collectables);
+        console.log("Collectables gespawnt bei x =", baseX);
+    }
+
+    checkForCollectableSpawn() {
+        if (this.character.x > this.lastCollectableSpawnX && this.lastCollectableSpawnX <= 1500) {
+            this.lastCollectableSpawnX += 650;
+            this.spawnCollectablesAtPosition(this.lastCollectableSpawnX);
+        }
     }
 
     run() {
         setInterval(() => {
             this.checkCollisions();
             this.checkThrowObjects();
+            this.checkForCollectableSpawn();
         }, 100)
+    }
+
+    stopGame() {
+        this.soundManager.stopAll();
+        intervalIds.forEach((interval) => {
+            clearInterval(interval);
+        });
     }
 
     checkCollisions() {

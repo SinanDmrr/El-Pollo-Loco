@@ -86,13 +86,13 @@ class Endboss extends MovableObject {
             this.lastDirectionChange = Date.now();
         }
         if (this.currentDirection === 'left') {
-            if (this.x > 1350) {
+            if (this.x > 1650) {
                 this.moveLeft(this.speed);
             } else {
                 this.currentDirection = 'right';
             }
         } else {
-            if (this.x < 1650) {
+            if (this.x < 2000) {
                 this.moveRight(this.speed);
             } else {
                 this.currentDirection = 'left';
