@@ -1,5 +1,5 @@
 class Chicken extends MovableObject {
-    x = 100 + Math.random() * 1200; // zwischen 200 und 700 (200+500)
+    x = 100 + Math.random() * 1200;
     y = 360;
     width = 60;
     height = 60;
@@ -17,7 +17,6 @@ class Chicken extends MovableObject {
         this.loadImages(this.IMAGES_WALKING)
         this.speed = this.speed + Math.random() * 2
         this.animate();
-
     }
 
     animate() {
@@ -25,14 +24,14 @@ class Chicken extends MovableObject {
 
         const intervalChicken = setInterval(() => {
             intervalIds.push(intervalChicken);
-            this.moveLeft(this.speed); // Bewegung nach links
+            this.moveLeft(this.speed);
 
             animationFrameCounter++;
 
             if (animationFrameCounter > 11) {
-                this.playAnimation(this.IMAGES_WALKING); // Animation der Bilder
-                animationFrameCounter = 0; // Zähler zurücksetzen
+                this.playAnimation(this.IMAGES_WALKING);
+                animationFrameCounter = 0;
             }
-        }, 1000 / 60); // 60 FPS-ähnliches Verhalten
+        }, 1000 / 60);
     }
 }

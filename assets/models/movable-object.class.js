@@ -87,8 +87,12 @@ class MovableObject extends DrawableObject {
     hit(dmg) {
         if (this.energy <= 0) {
             this.energy = 0;
-        } else if (!this.isHurt()) {
-            this.timeAtLastHit = new Date().getTime();
+        } else if (this instanceof Character) {
+            if (!this.isHurt()) {
+                this.timeAtLastHit = new Date().getTime();
+                this.energy -= dmg;
+            }
+        } else {
             this.energy -= dmg;
         }
     }

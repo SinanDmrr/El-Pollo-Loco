@@ -43,20 +43,28 @@ class World {
         this.character.world = this;
     }
 
-    //TODO über x >= 1200 spawnt Endgegner außerhalb des sichtbereichs und kommt rein gelaufen
     spawnChicken() {
         const spawnInterval = setInterval(() => {
-            if (this.character.x >= 1200 || world.character.isDead()) {
+            if (this.character.x >= 1200 && !world.character.isDead()) {
+                const spawnX = (this.character.x + 650);
+                const newEndboss = new Endboss();
+                newEndboss.x = spawnX;
+                this.level.enemies.push(newEndboss);
+                console.log("Endboss gespawnt");
+                clearInterval(spawnInterval);
+                return;
+            } else if (this.character.x >= 1200 || world.character.isDead()) {
                 console.log("Spawning beendet!");
                 clearInterval(spawnInterval);
                 return;
             }
+            const spawnX = (this.character.x + 650) + Math.random() * 300;
             const newChicken = new Chicken();
+            newChicken.x = spawnX;
             this.level.enemies.push(newChicken);
             console.log("Neues Chicken gespawnt. Aktuelle Anzahl:", this.level.enemies.length);
         }, 2000);
     }
-
 
     stopGame() {
         this.soundManager.stopAll();
@@ -74,7 +82,7 @@ class World {
 
     checkCollisions() {
         this.level.enemies.forEach((enemy, index) => {
-            if (this.character.isCollidingFromTop(enemy)) {
+            if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken) {
                 this.level.enemies.splice(index, 1);
             } else if (this.character.isColliding(enemy)) {
                 if (enemy instanceof Endboss) {
@@ -87,34 +95,34 @@ class World {
         });
     }
 
-    // checkThrowObjects() {
-    //     if (this.keyboard.SPACE) {
-    //         let bottle = new ThrowableObject(this.character.x, this.character.y);
-    //         this.throwableObject.push(bottle);
-    //     }
-    // }
-
     checkThrowObjects() {
+        if (this.keyboard.SPACE && !this.hasThrown && !world.character.isDead()) {
+            this.hasThrown = true;
+            let bottle = new ThrowableObject(this.character.x, this.character.y);
+            this.throwableObject.push(bottle);
+        } else if (!this.keyboard.SPACE) {
+            this.hasThrown = false;
+        }
+
+        // Kollisionen prüfen
         this.throwableObject.forEach((bottle, bottleIndex) => {
             this.level.enemies.forEach((enemy, enemyIndex) => {
                 if (bottle.isColliding(enemy)) {
                     if (enemy instanceof Endboss) {
-                        enemy.hit(20); // Endboss nimmt 20 Schaden
+                        enemy.hit(20);
+                        console.log("Endboss getroffen! Energie: ", enemy.energy);
+                        if (enemy.isDead()) {
+                            console.log("Endboss besiegt!");
+                            this.level.enemies.splice(enemyIndex, 1); // Endboss entfernen
+                        }
                     } else {
-                        this.level.enemies.splice(enemyIndex, 1); // Normaler Gegner wird entfernt
+                        this.level.enemies.splice(enemyIndex, 1); // Chicken entfernen
                     }
-                    this.throwableObject.splice(bottleIndex, 1); // Flasche wird entfernt
+                    this.throwableObject.splice(bottleIndex, 1); // Flasche entfernen
                 }
             });
         });
-
-        // Wurfobjekt erstellen, wenn SPACE gedrückt wird
-        if (this.keyboard.SPACE) {
-            let bottle = new ThrowableObject(this.character.x, this.character.y);
-            this.throwableObject.push(bottle);
-        }
     }
-
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -133,6 +141,7 @@ class World {
         this.addToMap(this.character);
         this.addObjectsToMap(this.throwableObject);
         this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.level.collectables);
 
         this.ctx.translate(-this.camera_x, 0);
         requestAnimationFrame(() => {
