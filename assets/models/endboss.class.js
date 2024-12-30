@@ -5,6 +5,10 @@ class Endboss extends MovableObject {
     height = 300;
     currentImage = 0;
     energy = 100;
+    isDeadStatus = false;
+    isHurtStatus = false;
+    currentDirection = this.randomDirection();
+    lastDirectionChange = Date.now();
 
     IMAGES_WALKING = [
         'assets/img/4_enemie_boss_chicken/1_walk/G1.png',
@@ -24,46 +28,47 @@ class Endboss extends MovableObject {
         'assets/img/4_enemie_boss_chicken/2_alert/G12.png'
     ];
 
+    IMAGES_HURT = [
+        'assets/img/4_enemie_boss_chicken/4_hurt/G21.png',
+        'assets/img/4_enemie_boss_chicken/4_hurt/G22.png',
+        'assets/img/4_enemie_boss_chicken/4_hurt/G23.png'
+    ];
+
+    IMAGES_DEAD = [
+        'assets/img/4_enemie_boss_chicken/5_dead/G24.png',
+        'assets/img/4_enemie_boss_chicken/5_dead/G25.png',
+        'assets/img/4_enemie_boss_chicken/5_dead/G26.png'
+    ];
+
     constructor() {
         super().loadImage('assets/img/4_enemie_boss_chicken/1_walk/G1.png');
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_ALERT);
-        this.speed = 1;
+        this.loadImages(this.IMAGES_HURT);
+        this.loadImages(this.IMAGES_DEAD);
+        this.speed = 2;
         this.animate();
     }
 
     animate() {
         let animationFrameCounter = 0;
-        let directionChangeInterval = 2000;
-        let currentDirection = this.randomDirection();
-        let lastDirectionChange = Date.now();
 
         const intervalEndboss = setInterval(() => {
             intervalIds.push(intervalEndboss);
-
-            if (Date.now() - lastDirectionChange > directionChangeInterval) {
-                currentDirection = this.randomDirection();
-                lastDirectionChange = Date.now();
-            }
-
-            if (currentDirection === 'left') {
-                if (this.x > 1420) {
-                    this.moveLeft(this.speed);
-                } else {
-                    currentDirection = 'right';
-                }
-            } else {
-                if (this.x < 1750) {
-                    this.moveRight(this.speed);
-                } else {
-                    currentDirection = 'left';
-                }
-            }
-
+            this.movementEndboss();
             animationFrameCounter++;
 
             if (animationFrameCounter > 16) {
-                this.playAnimation(this.IMAGES_WALKING);
+                if (this.isDeadStatus) {
+                    this.playAnimation(this.IMAGES_DEAD);
+                } else if (this.isHurtStatus) {
+                    this.playAnimation(this.IMAGES_HURT);
+                    setTimeout(() => {
+                        this.isHurtStatus = false;
+                    }, this.IMAGES_HURT.length * 200);
+                } else {
+                    this.playAnimation(this.IMAGES_WALKING);
+                }
                 animationFrameCounter = 0;
             }
         }, 1000 / 60);
@@ -73,5 +78,25 @@ class Endboss extends MovableObject {
         return Math.random() > 0.5 ? 'left' : 'right';
     }
 
+    movementEndboss() {
+        let directionChangeInterval = 2000;
 
+        if (Date.now() - this.lastDirectionChange > directionChangeInterval) {
+            this.currentDirection = this.randomDirection();
+            this.lastDirectionChange = Date.now();
+        }
+        if (this.currentDirection === 'left') {
+            if (this.x > 1350) {
+                this.moveLeft(this.speed);
+            } else {
+                this.currentDirection = 'right';
+            }
+        } else {
+            if (this.x < 1650) {
+                this.moveRight(this.speed);
+            } else {
+                this.currentDirection = 'left';
+            }
+        }
+    }
 }

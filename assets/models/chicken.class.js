@@ -5,7 +5,7 @@ class Chicken extends MovableObject {
     height = 60;
     currentImage = 0;
     speed = 1;
-    isDead = false;
+    isDeadStatus = false;
 
     IMAGES_WALKING = [
         'assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
@@ -26,7 +26,7 @@ class Chicken extends MovableObject {
         let animationFrameCounter = 0;
 
         const intervalChicken = setInterval(() => {
-            if (!this.isDead) {
+            if (!this.isDeadStatus) {
                 intervalIds.push(intervalChicken);
                 this.moveLeft(this.speed);
 
@@ -39,7 +39,6 @@ class Chicken extends MovableObject {
             } else {
                 clearInterval(intervalChicken);
             }
-
         }, 1000 / 60);
     }
 }

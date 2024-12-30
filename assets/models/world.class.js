@@ -50,11 +50,9 @@ class World {
                 const newEndboss = new Endboss();
                 newEndboss.x = spawnX;
                 this.level.enemies.push(newEndboss);
-                console.log("Endboss gespawnt");
                 clearInterval(spawnInterval);
                 return;
             } else if (this.character.x >= 1200 || world.character.isDead()) {
-                console.log("Spawning beendet!");
                 clearInterval(spawnInterval);
                 return;
             }
@@ -85,11 +83,12 @@ class World {
             if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken) {
                 enemy.img = enemy.IMAGE_DEAD;
                 enemy.loadImage(enemy.IMAGE_DEAD);
-                enemy.isDead = true;
+                enemy.isDeadStatus = true;
                 setTimeout(() => {
                     this.level.enemies.splice(index, 1);
                 }, 500)
-            } else if (this.character.isColliding(enemy) && !enemy.isDead) {
+            }
+            if (this.character.isColliding(enemy) && !enemy.isDeadStatus) {
                 if (enemy instanceof Endboss) {
                     this.character.hit(40);
                 } else {
@@ -114,10 +113,14 @@ class World {
                 if (bottle.isColliding(enemy)) {
                     if (enemy instanceof Endboss) {
                         enemy.hit(20);
-                        console.log("Endboss getroffen! Energie: ", enemy.energy);
+                        enemy.isHurtStatus = true;
                         if (enemy.isDead()) {
-                            console.log("Endboss besiegt!");
-                            this.level.enemies.splice(enemyIndex, 1);
+                            enemy.isDeadStatus = true;
+                            setTimeout(() => {
+                                this.level.enemies.splice(enemyIndex, 1);
+                            }, enemy.IMAGES_DEAD.length * 250);
+                        } else {
+
                         }
                     } else {
                         this.level.enemies.splice(enemyIndex, 1);
