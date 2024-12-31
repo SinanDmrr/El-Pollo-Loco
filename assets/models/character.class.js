@@ -1,5 +1,5 @@
 class Character extends MovableObject {
-    x = -950;
+    x = -1000;
     offsetX = 20;
     y = 220;
     width = 120;
@@ -11,6 +11,8 @@ class Character extends MovableObject {
     deadAnimation = false;
     idleTimer = 0;
     idleSleep = 60 * 5;
+    collectedCoins = 0;
+    collectedBottles = 0;
 
 
     IMAGES_WALKING = [

@@ -24,17 +24,17 @@ class Statusbar extends DrawableObject {
         'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png'
     ];
 
-    //TODO Eventuell mit IMAGES_HEALTH abwickelbar
     IMAGES_ENDBOSS = [
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png'
+        'assets/img/7_statusbars/2_statusbar_endboss/orange/orange0.png',
+        'assets/img/7_statusbars/2_statusbar_endboss/orange/orange20.png',
+        'assets/img/7_statusbars/2_statusbar_endboss/orange/orange40.png',
+        'assets/img/7_statusbars/2_statusbar_endboss/orange/orange60.png',
+        'assets/img/7_statusbars/2_statusbar_endboss/orange/orange80.png',
+        'assets/img/7_statusbars/2_statusbar_endboss/orange/orange100.png'
     ];
 
     percentage = 100;
+    collectablePercentage = 0;
 
     constructor(type = 'health', y = 0) {
         super();
@@ -46,16 +46,19 @@ class Statusbar extends DrawableObject {
         switch (type) {
             case 'coin':
                 this.IMAGES = this.IMAGES_COIN;
+                this.loadImages(this.IMAGES);
+                this.setPercentage(this.collectablePercentage);
                 break;
             case 'bottle':
                 this.IMAGES = this.IMAGES_BOTTLE;
+                this.loadImages(this.IMAGES);
+                this.setPercentage(this.collectablePercentage);
                 break;
             default:
                 this.IMAGES = this.IMAGES_HEALTH;
+                this.loadImages(this.IMAGES);
+                this.setPercentage(this.percentage);
         }
-        this.loadImages(this.IMAGES);
-        this.setPercentage(this.percentage);
-
     }
 
     setPercentage(percentage) {
