@@ -108,10 +108,8 @@ class Character extends MovableObject {
 
         const intervalAnimate = setInterval(() => {
             intervalIds.push(intervalAnimate);
-            // if (this.isDead()) {
-            //     playDeadAnimation();
             if (this.isDead() && !this.deadAnimation) {
-                this.deadAnimation = true; // Verhindert mehrfaches Starten der Animation
+                this.deadAnimation = true;
                 this.playDeadAnimation();
             } else if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT);
@@ -136,20 +134,16 @@ class Character extends MovableObject {
     }
 
     playDeadAnimation() {
-        // Stoppt alle laufenden Intervalle
         this.clearAllIntervals();
-
-        // Startet die Dead-Animation
         let index = 0;
         const interval = setInterval(() => {
             if (index < this.IMAGES_DEAD.length) {
                 this.img = this.imgCache[this.IMAGES_DEAD[index]];
                 index++;
             } else {
-                clearInterval(interval); // Dead-Animation ist beendet
-                this.world.stopGame();   // Beendet das Spiel
+                clearInterval(interval);
+                this.world.stopGame();
             }
-        }, 150); // Zeitintervall pro Bild
+        }, 150);
     }
-
 }
