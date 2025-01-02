@@ -91,7 +91,6 @@ class Character extends MovableObject {
             if (this.world.keyboard.UP && !this.isAboveGround()) {
                 this.idleTimer = 0;
                 this.jump();
-
             } else if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.idleTimer = 0;
                 this.moveRight();
@@ -109,12 +108,14 @@ class Character extends MovableObject {
 
         const intervalAnimate = setInterval(() => {
             intervalIds.push(intervalAnimate);
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-                this.world.stopGame();
-
+            // if (this.isDead()) {
+            //     playDeadAnimation();
+            if (this.isDead() && !this.deadAnimation) {
+                this.deadAnimation = true; // Verhindert mehrfaches Starten der Animation
+                this.playDeadAnimation();
             } else if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT);
+                this.idleTimer = 0;
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
                 this.world.soundManager.play('jumping');
@@ -133,4 +134,22 @@ class Character extends MovableObject {
             }
         }, 150);
     }
+
+    playDeadAnimation() {
+        // Stoppt alle laufenden Intervalle
+        this.clearAllIntervals();
+
+        // Startet die Dead-Animation
+        let index = 0;
+        const interval = setInterval(() => {
+            if (index < this.IMAGES_DEAD.length) {
+                this.img = this.imgCache[this.IMAGES_DEAD[index]];
+                index++;
+            } else {
+                clearInterval(interval); // Dead-Animation ist beendet
+                this.world.stopGame();   // Beendet das Spiel
+            }
+        }, 150); // Zeitintervall pro Bild
+    }
+
 }

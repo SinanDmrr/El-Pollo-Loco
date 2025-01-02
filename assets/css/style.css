@@ -57,6 +57,7 @@ main {
 main canvas {
   background-color: black;
   border-radius: 1rem;
+  display: block;
 }
 main .instruction {
   color: #d4d4d4;
@@ -73,16 +74,13 @@ footer {
   padding: 10px;
 }
 
-@media (max-width: 768px) {
-  header h1 {
-    font-size: 1.5rem;
-  }
-  main {
-    justify-content: flex-start;
+@media only screen and (max-width: 760px) {
+  canvas {
+    width: 100%;
   }
 }
-@media (max-width: 480px) {
-  header h1 {
-    font-size: 1.2rem;
+@media only screen and (max-width: 480px) {
+  canvas {
+    width: 100vh;
   }
 }/*# sourceMappingURL=style.css.map */

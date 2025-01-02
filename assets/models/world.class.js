@@ -93,7 +93,7 @@ class World {
             this.spawnCollectablesAtPosition(this.lastCollectableSpawnX);
         }
     }
-    //TODO
+
     checkCollectableCollisions() {
         this.level.collectables.forEach((collectable, index) => {
             if (this.character.isColliding(collectable)) {
@@ -127,19 +127,19 @@ class World {
 
     checkCollisions() {
         this.level.enemies.forEach((enemy, index) => {
-            if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken) {
+            if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken && !enemy.isDeadStatus) {
                 enemy.img = enemy.IMAGE_DEAD;
                 enemy.loadImage(enemy.IMAGE_DEAD);
                 enemy.isDeadStatus = true;
                 setTimeout(() => {
                     this.level.enemies.splice(index, 1);
-                }, 500)
+                }, 500);
             }
             if (this.character.isColliding(enemy) && !enemy.isDeadStatus) {
                 if (enemy instanceof Endboss) {
                     this.character.hit(40);
                 } else {
-                    this.character.hit(20);
+                    this.character.hit(100);
                 }
                 this.healthBar.setPercentage(this.character.energy);
             }
@@ -186,40 +186,6 @@ class World {
             });
         });
     }
-
-
-
-    // checkThrowObjects() {
-    //     if (this.keyboard.SPACE && !this.hasThrown && !world.character.isDead()) {
-    //         this.hasThrown = true;
-    //         let bottle = new ThrowableObject(this.character.x, this.character.y);
-    //         this.throwableObject.push(bottle);
-    //     } else if (!this.keyboard.SPACE) {
-    //         this.hasThrown = false;
-    //     }
-
-    //     this.throwableObject.forEach((bottle, bottleIndex) => {
-    //         this.level.enemies.forEach((enemy, enemyIndex) => {
-    //             if (bottle.isColliding(enemy)) {
-    //                 if (enemy instanceof Endboss) {
-    //                     enemy.hit(20);
-    //                     enemy.isHurtStatus = true;
-    //                     if (enemy.isDead()) {
-    //                         enemy.isDeadStatus = true;
-    //                         setTimeout(() => {
-    //                             this.level.enemies.splice(enemyIndex, 1);
-    //                         }, enemy.IMAGES_DEAD.length * 250);
-    //                     } else {
-
-    //                     }
-    //                 } else {
-    //                     this.level.enemies.splice(enemyIndex, 1);
-    //                 }
-    //                 this.throwableObject.splice(bottleIndex, 1);
-    //             }
-    //         });
-    //     });
-    // }
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
