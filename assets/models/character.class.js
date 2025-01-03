@@ -142,7 +142,6 @@ class Character extends MovableObject {
                 index++;
             } else {
                 clearInterval(interval);
-                this.world.stopGame();
             }
         }, 150);
     }

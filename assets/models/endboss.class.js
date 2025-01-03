@@ -79,24 +79,31 @@ class Endboss extends MovableObject {
     }
 
     movementEndboss() {
-        let directionChangeInterval = 2000;
+        const leftLimit = 1500;
+        const rightLimit = 2000;
+
+        let directionChangeInterval = 1000;
 
         if (Date.now() - this.lastDirectionChange > directionChangeInterval) {
             this.currentDirection = this.randomDirection();
             this.lastDirectionChange = Date.now();
         }
-        if (this.currentDirection === 'left') {
-            if (this.x > 1650) {
-                this.moveLeft(this.speed);
-            } else {
-                this.currentDirection = 'right';
-            }
-        } else {
-            if (this.x < 2000) {
-                this.moveRight(this.speed);
-            } else {
-                this.currentDirection = 'left';
+
+        if (!this.isDeadStatus) {
+            if (this.currentDirection === 'left') {
+                if (this.x > leftLimit) {
+                    this.moveLeft(this.speed);
+                } else {
+                    this.currentDirection = 'right';
+                }
+            } else if (this.currentDirection === 'right') {
+                if (this.x < rightLimit) {
+                    this.moveRight(this.speed);
+                } else {
+                    this.currentDirection = 'left';
+                }
             }
         }
     }
+
 }

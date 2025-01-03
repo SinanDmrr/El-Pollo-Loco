@@ -1,10 +1,17 @@
 class World {
     healthBar = new Statusbar();
+    bossHealthBar = new Statusbar('boss', 5, 500);
     coinBar = new Statusbar('coin', 40);
     bottleBar = new Statusbar('bottle', 80);
     character = new Character();
     throwableObject = [];
     bottleCount = 0;
+    gameStart = true;
+    gameOver = false;
+    endbossSpwaned = false;
+    endbossDefeated = false;
+    startScreen;
+    endScreen;
 
     level = level1;
     canvas;
@@ -13,6 +20,7 @@ class World {
     soundManager;
     camera_x = -100;
     lastCollectableSpawnX;
+
 
     constructor(canvas, keyboard, soundManager) {
         this.ctx = canvas.getContext('2d');
@@ -52,6 +60,8 @@ class World {
                 const spawnX = (this.character.x + 650);
                 const newEndboss = new Endboss();
                 newEndboss.x = spawnX;
+                this.bossHealthBar = new Statusbar('boss', 5, 500);
+                this.bossSpawned = true;
                 this.level.enemies.push(newEndboss);
                 clearInterval(spawnInterval);
                 return;
@@ -63,7 +73,6 @@ class World {
             const newChicken = new Chicken();
             newChicken.x = spawnX;
             this.level.enemies.push(newChicken);
-            console.log("Neues Chicken gespawnt. Aktuelle Anzahl:", this.level.enemies.length);
         }, 2000);
     }
 
@@ -85,7 +94,6 @@ class World {
             new CollectableObject('assets/img/8_coin/coin_1.png', baseX + gap * 4, baseY, 100, 100),
         ];
         this.level.collectables.push(...collectables);
-        console.log("Collectables gespawnt bei x =", baseX);
     }
 
     checkForCollectableSpawn() {
@@ -118,14 +126,6 @@ class World {
         }, 100)
     }
 
-    stopGame() {
-        this.soundManager.stopAll();
-        intervalIds.forEach((interval) => {
-            clearInterval(interval);
-        });
-        this.level.clouds.forEach((cloud) => cloud.stopAnimation()); // Animation der Clouds stoppen
-    }
-
     checkCollisions() {
         this.level.enemies.forEach((enemy, index) => {
             if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken && !enemy.isDeadStatus) {
@@ -140,9 +140,16 @@ class World {
                 if (enemy instanceof Endboss) {
                     this.character.hit(40);
                 } else {
-                    this.character.hit(20);
+                    this.character.hit(100);
                 }
                 this.healthBar.setPercentage(this.character.energy);
+            }
+            if (this.character.isDead() && !this.gameOver) {
+                this.gameOver = true;
+                this.gameStart = false;
+            }
+            if (enemy instanceof Endboss && enemy.isDead() && !this.endbossDefeated) {
+                this.endbossDefeated = true;
             }
         });
     }
@@ -176,13 +183,14 @@ class World {
                     if (enemy instanceof Endboss) {
                         enemy.hit(20);
                         enemy.isHurtStatus = true;
-                        console.log(enemy.energy);
                         if (enemy.isDead()) {
                             enemy.isDeadStatus = true;
+                            this.bossSpawned = false;
                             setTimeout(() => {
                                 this.level.enemies.splice(enemyIndex, 1);
-                            }, enemy.IMAGES_DEAD.length * 250);
+                            }, enemy.IMAGES_DEAD.length * 280);
                         }
+                        this.bossHealthBar.setPercentage(enemy.energy);
                     } else {
                         this.level.enemies.splice(enemyIndex, 1);
                     }
@@ -191,10 +199,9 @@ class World {
         });
     }
 
-
+    //TODO DRAW
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
         this.ctx.translate(this.camera_x, 0);
 
         this.addObjectsToMap(this.level.backgroundObjects);
@@ -204,6 +211,9 @@ class World {
         this.addToMap(this.healthBar);
         this.addToMap(this.coinBar);
         this.addToMap(this.bottleBar);
+        if (this.bossSpawned) {
+            this.addToMap(this.bossHealthBar);
+        }
         this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
@@ -213,10 +223,11 @@ class World {
         this.addObjectsToMap(this.throwableObject);
 
         this.ctx.translate(-this.camera_x, 0);
-        requestAnimationFrame(() => {
-            this.draw()
+
+        this.animationFrameId = requestAnimationFrame(() => {
+            this.draw();
         });
-    };
+    }
 
     addToMap(mo) {
         if (mo.otherDirection) {

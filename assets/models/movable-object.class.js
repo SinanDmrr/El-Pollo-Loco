@@ -67,17 +67,31 @@ class MovableObject extends DrawableObject {
         const characterTop = this.y;
         const characterBottom = this.y + this.height;
 
-        const moLeft = mo.x;
-        const moRight = mo.x + mo.width;
-        const moTop = mo.y;
-        const moBottom = mo.y + mo.height;
+        if (mo instanceof Endboss) {
+            const moLeft = mo.x + 20;
+            const moRight = mo.x + mo.width;
+            const moTop = mo.y;
+            const moBottom = mo.y + mo.height;
 
-        return (
-            characterRight > moLeft &&
-            characterLeft < moRight &&
-            characterBottom > moTop &&
-            characterTop < moBottom
-        );
+            return (
+                characterRight > moLeft &&
+                characterLeft < moRight &&
+                characterBottom > moTop &&
+                characterTop < moBottom
+            );
+        } else {
+            const moLeft = mo.x;
+            const moRight = mo.x + mo.width;
+            const moTop = mo.y;
+            const moBottom = mo.y + mo.height;
+
+            return (
+                characterRight > moLeft &&
+                characterLeft < moRight &&
+                characterBottom > moTop &&
+                characterTop < moBottom
+            );
+        }
     }
 
     hit(dmg) {
