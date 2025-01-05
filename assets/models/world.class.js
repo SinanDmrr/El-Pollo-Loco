@@ -6,12 +6,10 @@ class World {
     character = new Character();
     throwableObject = [];
     bottleCount = 0;
-    gameStart = true;
+    gameRunning = true;
     gameOver = false;
     endbossSpwaned = false;
     endbossDefeated = false;
-    startScreen;
-    endScreen;
 
     level = level1;
     canvas;
@@ -31,19 +29,21 @@ class World {
         this.setWorld();
         this.run();
         this.loadSound();
-        // this.soundManager.play('backgroundmusic');
-        // this.soundManager.loop('backgroundmusic', true);
+        this.soundManager.play('backgroundmusic');
+        this.soundManager.loop('backgroundmusic', true);
         this.spawnChicken();
         this.spawnInitialCollectables();
     }
 
     loadSound() {
         this.soundManager.loadSound('walking', 'assets/sounds/walking.mp3');
+        this.soundManager.setVolume('walking', 0.05);
         this.soundManager.loadSound('jumping', 'assets/sounds/jump.mp3');
-        this.soundManager.setVolume('jumping', 0.025);
+        this.soundManager.setVolume('jumping', 0.005);
         this.soundManager.loadSound('throw', 'assets/sounds/throw.mp3');
+        this.soundManager.setVolume('throw', 0.05);
         this.soundManager.loadSound('backgroundmusic', 'assets/sounds/background_music.mp3');
-        this.soundManager.setVolume('backgroundmusic', 0.2);
+        this.soundManager.setVolume('backgroundmusic', 0.02);
         this.soundManager.loadSound('chicken', 'assets/sounds/chicken.mp3');
         this.soundManager.loadSound('game_win', 'assets/sounds/game_win.mp3');
         this.soundManager.loadSound('game_lose', 'assets/sounds/game_lose.mp3');
@@ -54,25 +54,96 @@ class World {
         this.character.world = this;
     }
 
+    run() {
+        setInterval(() => {
+            this.checkCollisions();
+            this.checkThrowObjects();
+            this.checkForCollectableSpawn();
+            this.checkCollectableCollisions();
+        }, 100)
+    }
+
+    //TODO DRAW
+    draw() {
+        if (this.gameOver) {
+            //GAME OVER HIER IMPLEMENTIEREN
+            let gameOverImage = new Image();
+            gameOverImage.src = "assets/img/9_intro_outro_screens/game_over/game over.png";
+            gameOverImage.onload = () => {
+                this.ctx.drawImage(gameOverImage, 0, 0, this.canvas.width, this.canvas.height);
+            };
+            this.soundManager.stop('backgroundmusic');
+            this.soundManager.play('game_lose');
+        } else if (this.endbossDefeated) {
+            //GAME OVER HIER IMPLEMENTIEREN
+            let winImage = new Image();
+            winImage.src = "assets/img/9_intro_outro_screens/win/win_2.png";
+            winImage.onload = () => {
+                this.ctx.drawImage(winImage, 0, 0, this.canvas.width, this.canvas.height);
+            };
+            this.soundManager.stop('backgroundmusic');
+            this.soundManager.play('game_win');
+        } else if (this.gameRunning) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.translate(this.camera_x, 0);
+
+            this.addObjectsToMap(this.level.backgroundObjects);
+            this.addObjectsToMap(this.level.clouds);
+
+            this.ctx.translate(-this.camera_x, 0);
+            this.addToMap(this.healthBar);
+            this.addToMap(this.coinBar);
+            this.addToMap(this.bottleBar);
+            if (this.bossSpawned) {
+                this.addToMap(this.bossHealthBar);
+            }
+            this.ctx.translate(this.camera_x, 0);
+
+            this.addToMap(this.character);
+
+            this.addObjectsToMap(this.level.enemies);
+            this.addObjectsToMap(this.level.collectables);
+            this.addObjectsToMap(this.throwableObject);
+
+            this.ctx.translate(-this.camera_x, 0);
+
+            this.animationFrameId = requestAnimationFrame(() => {
+                this.draw();
+            });
+        }
+    }
+
     spawnChicken() {
         const spawnInterval = setInterval(() => {
-            if (this.character.x >= 1200 && !world.character.isDead()) {
-                const spawnX = (this.character.x + 650);
+            if (this.character.isDead()) {
+                clearInterval(spawnInterval);
+                return;
+            }
+
+            if (this.character.x >= 1200 && !this.bossSpawned) {
+                const spawnX = this.character.x + 650;
                 const newEndboss = new Endboss();
+                this.soundManager.play('boss_chicken_start');
+                setTimeout(() => {
+                    this.soundManager.stop('boss_chicken_start');
+                }, 800)
                 newEndboss.x = spawnX;
                 this.bossHealthBar = new Statusbar('boss', 5, 500);
                 this.bossSpawned = true;
                 this.level.enemies.push(newEndboss);
                 clearInterval(spawnInterval);
                 return;
-            } else if (this.character.x >= 1200 || world.character.isDead()) {
-                clearInterval(spawnInterval);
-                return;
             }
-            const spawnX = (this.character.x + 650) + Math.random() * 300;
-            const newChicken = new Chicken();
-            newChicken.x = spawnX;
-            this.level.enemies.push(newChicken);
+
+            const numberOfChickens = Math.floor(Math.random() * 3) + 1;
+            const baseSpawnX = this.character.x + 650;
+
+            for (let i = 0; i < numberOfChickens; i++) {
+                this.soundManager.play('chicken');
+                const newChicken = new Chicken();
+                newChicken.x = baseSpawnX + i * 100;
+                this.level.enemies.push(newChicken);
+            }
         }, 2000);
     }
 
@@ -117,41 +188,44 @@ class World {
         });
     }
 
-    run() {
-        setInterval(() => {
-            this.checkCollisions();
-            this.checkThrowObjects();
-            this.checkForCollectableSpawn();
-            this.checkCollectableCollisions();
-        }, 100)
-    }
-
     checkCollisions() {
+        let enemiesToRemove = [];
+
         this.level.enemies.forEach((enemy, index) => {
-            if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken && !enemy.isDeadStatus) {
-                enemy.img = enemy.IMAGE_DEAD;
-                enemy.loadImage(enemy.IMAGE_DEAD);
-                enemy.isDeadStatus = true;
-                setTimeout(() => {
-                    this.level.enemies.splice(index, 1);
-                }, 500);
+            if (enemy.isDeadStatus) return;
+
+            if (this.character.isCollidingFromTop(enemy)) {
+                if (enemy instanceof Chicken) {
+                    enemy.img = enemy.IMAGE_DEAD;
+                    enemy.loadImage(enemy.IMAGE_DEAD);
+                    enemy.isDeadStatus = true;
+
+                    setTimeout(() => {
+                        enemiesToRemove.push(index);
+                    }, 500);
+                }
+                return;
             }
-            if (this.character.isColliding(enemy) && !enemy.isDeadStatus) {
+
+            if (this.character.isColliding(enemy)) {
                 if (enemy instanceof Endboss) {
                     this.character.hit(40);
                 } else {
-                    this.character.hit(100);
+                    this.character.hit(20);
                 }
+
                 this.healthBar.setPercentage(this.character.energy);
-            }
-            if (this.character.isDead() && !this.gameOver) {
-                this.gameOver = true;
-                this.gameStart = false;
-            }
-            if (enemy instanceof Endboss && enemy.isDead() && !this.endbossDefeated) {
-                this.endbossDefeated = true;
+
+                if (this.character.isDead() && !this.gameOver) {
+                    setTimeout(() => {
+                        this.gameOver = true;
+                        this.gameRunning = false;
+                    }, 1000)
+                }
             }
         });
+
+        enemiesToRemove.reverse().forEach(index => this.level.enemies.splice(index, 1));
     }
 
     checkThrowObjects() {
@@ -183,11 +257,19 @@ class World {
                     if (enemy instanceof Endboss) {
                         enemy.hit(20);
                         enemy.isHurtStatus = true;
+                        if (enemy.energy >= 20) {
+                            this.soundManager.play('boss_chicken_start');
+                            setTimeout(() => {
+                                this.soundManager.stop('boss_chicken_start');
+                            }, 300)
+                        }
                         if (enemy.isDead()) {
                             enemy.isDeadStatus = true;
-                            this.bossSpawned = false;
+                            this.soundManager.play('boss_chicken_start');
                             setTimeout(() => {
                                 this.level.enemies.splice(enemyIndex, 1);
+                                this.endbossDefeated = true;
+                                this.bossSpawned = false;
                             }, enemy.IMAGES_DEAD.length * 280);
                         }
                         this.bossHealthBar.setPercentage(enemy.energy);
@@ -196,36 +278,6 @@ class World {
                     }
                 }
             });
-        });
-    }
-
-    //TODO DRAW
-    draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.translate(this.camera_x, 0);
-
-        this.addObjectsToMap(this.level.backgroundObjects);
-        this.addObjectsToMap(this.level.clouds);
-
-        this.ctx.translate(-this.camera_x, 0);
-        this.addToMap(this.healthBar);
-        this.addToMap(this.coinBar);
-        this.addToMap(this.bottleBar);
-        if (this.bossSpawned) {
-            this.addToMap(this.bossHealthBar);
-        }
-        this.ctx.translate(this.camera_x, 0);
-
-        this.addToMap(this.character);
-
-        this.addObjectsToMap(this.level.enemies);
-        this.addObjectsToMap(this.level.collectables);
-        this.addObjectsToMap(this.throwableObject);
-
-        this.ctx.translate(-this.camera_x, 0);
-
-        this.animationFrameId = requestAnimationFrame(() => {
-            this.draw();
         });
     }
 

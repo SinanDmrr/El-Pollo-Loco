@@ -14,7 +14,7 @@ class SoundManager {
 
     loadSound(name, src) {
         const sound = new Audio(src);
-        sound.volume = 0.5;
+        sound.volume = 0.03;
         this.sounds[name] = sound;
     }
 

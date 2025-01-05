@@ -58,9 +58,10 @@ class Endboss extends MovableObject {
             this.movementEndboss();
             animationFrameCounter++;
 
-            if (animationFrameCounter > 16) {
+            if (animationFrameCounter > 10) {
                 if (this.isDeadStatus) {
                     this.playAnimation(this.IMAGES_DEAD);
+                    this.y += 60;
                 } else if (this.isHurtStatus) {
                     this.playAnimation(this.IMAGES_HURT);
                     setTimeout(() => {
@@ -79,7 +80,7 @@ class Endboss extends MovableObject {
     }
 
     movementEndboss() {
-        const leftLimit = 1500;
+        const leftLimit = 1700;
         const rightLimit = 2000;
 
         let directionChangeInterval = 1000;
@@ -105,5 +106,4 @@ class Endboss extends MovableObject {
             }
         }
     }
-
 }

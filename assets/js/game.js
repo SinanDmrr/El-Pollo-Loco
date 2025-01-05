@@ -10,11 +10,6 @@ function init() {
     world = new World(canvas, keyboard, soundManager);
 }
 
-// function init() {
-//     canvas = document.getElementById('canvas');
-//     world = new World(canvas, keyboard, new SoundManager());
-// };
-
 window.addEventListener('keydown', (event) => {
     keyboard.keyDown(event);
 });
