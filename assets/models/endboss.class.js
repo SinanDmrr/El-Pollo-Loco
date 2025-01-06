@@ -61,7 +61,7 @@ class Endboss extends MovableObject {
             if (animationFrameCounter > 10) {
                 if (this.isDeadStatus) {
                     this.playAnimation(this.IMAGES_DEAD);
-                    this.y += 60;
+                    this.y += 80;
                 } else if (this.isHurtStatus) {
                     this.playAnimation(this.IMAGES_HURT);
                     setTimeout(() => {
