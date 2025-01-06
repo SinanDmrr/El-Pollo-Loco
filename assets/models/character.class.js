@@ -7,12 +7,13 @@ class Character extends MovableObject {
     height = 200;
     currentImage = 0;
     world;
-    speed = 7;
+    speed = 5;
     deadAnimation = false;
     idleTimer = 0;
     idleSleep = 60 * 5;
     collectedCoins = 0;
     collectedBottles = 0;
+    hurtSoundPlayed = false;
 
 
     IMAGES_WALKING = [
@@ -116,10 +117,10 @@ class Character extends MovableObject {
                 this.idleTimer = 0;
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
-                this.world.soundManager.play('jumping');
+                this.world.musicPaused ? this.world.soundManager.stop('jumping') : this.world.soundManager.play('jumping');
             } else if (this.world.keyboard.RIGHT && !this.isAboveGround() || this.world.keyboard.LEFT && !this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_WALKING);
-                this.world.soundManager.play('walking');
+                this.world.musicPaused ? this.world.soundManager.stop('walking') : this.world.soundManager.play('walking');
             }
             else {
                 this.world.soundManager.stop('walking');

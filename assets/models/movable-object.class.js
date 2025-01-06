@@ -101,6 +101,7 @@ class MovableObject extends DrawableObject {
             if (!this.isHurt()) {
                 this.timeAtLastHit = new Date().getTime();
                 this.energy -= dmg;
+                soundManager.play('hurt');
             }
         } else {
             this.energy -= dmg;

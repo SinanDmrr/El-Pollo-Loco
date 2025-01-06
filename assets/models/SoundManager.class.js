@@ -57,6 +57,12 @@ class SoundManager {
         }
     }
 
+    playAll() {
+        for (let soundName in this.sounds) {
+            this.sounds[soundName].play();
+        }
+    }
+
     pauseAll() {
         for (let soundName in this.sounds) {
             this.sounds[soundName].pause();

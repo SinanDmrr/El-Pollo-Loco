@@ -11,15 +11,16 @@ class World {
     endbossSpwaned = false;
     endbossDefeated = false;
     showInstruction = false;
-
+    // musicPaused = false;
+    musicIconImage;
     level = level1;
-    canvas;
+    // canvas;
     ctx;
     keyboard;
-    soundManager;
+    // soundManager;
     camera_x = -100;
     lastCollectableSpawnX;
-
+    musicPaused;
 
     constructor(canvas, keyboard, soundManager) {
         this.ctx = canvas.getContext('2d');
@@ -31,51 +32,47 @@ class World {
         this.run();
         this.loadSound();
         this.canvasClickListener();
-
+        this.musicIconImage = this.character.loadImage('assets/img/10_icons/music.png');
+        this.musicPaused = false;
     }
 
-    // canvasClickListener() {
-    //     this.canvas.addEventListener('click', (event) => {
-    //         const scaleX = this.canvas.width / this.canvas.offsetWidth;
-    //         const scaleY = this.canvas.height / this.canvas.offsetHeight;
+    resetGame() {
+        // Spielzustand zurücksetzen
+        this.gameRunning = false;
+        this.gameOver = false;
+        this.endbossDefeated = false;
+        this.character.deadAnimation = false;
+        this.character.energy = 100;
+        this.character.x = -1000;
+        this.healthBar.setPercentage(100);
+        this.bottleCount = 0;
+        this.coinBar.setPercentage(0);
+        this.bottleBar.setPercentage(0);
+        this.throwableObject = [];
+        this.level.enemies = [];
+        this.level.collectables = [];
+        this.bossSpawned = false;
+        this.character.deadAnimation = false;
+        this.character.x = -1000;
+        this.character.y = 220;
+        this.character.idleTimer = 0;
+        this.character.clearAllIntervals();
+        this.character.loadImage('assets/img/2_walk/W-21.png');
+        this.character.animate();
+        this.musicPaused = false;
 
-    //         const clickX = event.offsetX * scaleX;
-    //         const clickY = event.offsetY * scaleY;
+        this.draw();
+    }
 
-    //         const icons = this.gameOver
-    //             ? [{ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' }]
-    //             : [
-    //                 { x: 50, y: 50 + 25, radius: 32, name: 'instruction' },
-    //                 { x: 720 / 2, y: 50 + 25, radius: 32, name: 'play' },
-    //                 { x: 720 - 50, y: 50 + 25, radius: 32, name: 'fullscreen' }
-    //             ];
-
-    //         for (const icon of icons) {
-    //             const distance = Math.sqrt((clickX - icon.x) ** 2 + (clickY - icon.y) ** 2);
-    //             if (distance <= icon.radius) {
-    //                 console.log(`Icon '${icon.name}' angeklickt!`);
-    //                 if (icon.name === 'home') {
-    //                     this.restartGame();
-    //                 } else if (icon.name === 'play') {
-    //                     this.gameRunning = true;
-    //                     this.draw();
-    //                     this.spawnChicken();
-    //                     this.spawnInitialCollectables();
-    //                 } else if (icon.name === 'fullscreen') {
-    //                     this.toggleFullscreen(this.canvas);
-    //                 } else if (icon.name === 'instruction') {
-    //                     this.showInstruction = !this.showInstruction;
-    //                     this.showInstructions();
-    //                 }
-    //                 return;
-    //             }
-    //         }
-    //         console.log('Kein Icon getroffen.');
-    //     });
-    // }
+    pauseMusic() {
+        if (!this.musicPaused) {
+            this.musicPaused = true;
+        } else {
+            this.musicPaused = false;
+        }
+    }
 
     canvasClickListener() {
-        // Setze den Standardcursor zu Beginn
         this.canvas.style.cursor = 'default';
 
         this.canvas.addEventListener('mousemove', (event) => {
@@ -85,25 +82,28 @@ class World {
             const mouseX = event.offsetX * scaleX;
             const mouseY = event.offsetY * scaleY;
 
-            let isHovering = false; // Flag, um zu erkennen, ob der Mauszeiger über einem Icon ist
-            const icons = this.gameOver || this.endbossDefeated
-                ? [{ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' }]
-                : [
+            let isHovering = false;
+            let icons = [];
+            if (this.gameOver || this.endbossDefeated) {
+                icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' });
+            } else if (!this.gameRunning) {
+                icons = [
                     { x: 50, y: 50 + 25, radius: 32, name: 'instruction' },
                     { x: 720 / 2, y: 50 + 25, radius: 32, name: 'play' },
                     { x: 720 - 50, y: 50 + 25, radius: 32, name: 'fullscreen' }
                 ];
+            } else if (this.gameRunning) {
+                icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'music' })
+            }
 
-            // Überprüfe, ob der Mauszeiger über einem der Icons ist
             for (const icon of icons) {
                 const distance = Math.sqrt((mouseX - icon.x) ** 2 + (mouseY - icon.y) ** 2);
                 if (distance <= icon.radius) {
-                    isHovering = true; // Maus ist über einem Icon
+                    isHovering = true;
                     break;
                 }
             }
 
-            // Wenn die Maus über einem Icon ist, setze den Cursor auf pointer
             this.canvas.style.cursor = isHovering ? 'pointer' : 'default';
         });
 
@@ -111,23 +111,31 @@ class World {
             const scaleX = this.canvas.width / this.canvas.offsetWidth;
             const scaleY = this.canvas.height / this.canvas.offsetHeight;
 
+            // Klickposition auf der Canvas berechnen
             const clickX = event.offsetX * scaleX;
             const clickY = event.offsetY * scaleY;
 
-            const icons = this.gameOver
-                ? [{ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' }]
-                : [
+            // Icons basierend auf dem aktuellen Zustand generieren
+            let icons = [];
+            if (this.gameOver || this.endbossDefeated) {
+                icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' });
+            } else if (!this.gameRunning) {
+                icons = [
                     { x: 50, y: 50 + 25, radius: 32, name: 'instruction' },
                     { x: 720 / 2, y: 50 + 25, radius: 32, name: 'play' },
                     { x: 720 - 50, y: 50 + 25, radius: 32, name: 'fullscreen' }
                 ];
+            } else if (this.gameRunning) {
+                icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'music' })
+            }
 
+            // Überprüfen, ob ein Icon angeklickt wurde
             for (const icon of icons) {
                 const distance = Math.sqrt((clickX - icon.x) ** 2 + (clickY - icon.y) ** 2);
                 if (distance <= icon.radius) {
-                    console.log(`Icon '${icon.name}' angeklickt!`);
+                    // Aktion basierend auf dem Icon-Namen ausführen
                     if (icon.name === 'home') {
-                        this.restartGame();
+                        this.resetGame();
                     } else if (icon.name === 'play') {
                         this.gameRunning = true;
                         this.draw();
@@ -138,11 +146,12 @@ class World {
                     } else if (icon.name === 'instruction') {
                         this.showInstruction = !this.showInstruction;
                         this.showInstructions();
+                    } else if (icon.name === 'music') {
+                        this.pauseMusic();
                     }
                     return;
                 }
             }
-            console.log('Kein Icon getroffen.');
         });
     }
 
@@ -193,38 +202,41 @@ class World {
             gameOverImage.src = "assets/img/9_intro_outro_screens/game_over/game over.png";
             gameOverImage.onload = () => {
                 this.ctx.drawImage(gameOverImage, 0, 0, this.canvas.width, this.canvas.height);
+                this.drawScreenIcons();
             };
-            this.soundManager.stop('backgroundmusic');
-            this.soundManager.play('game_lose');
-            console.log("GAME OVER");
+            this.soundManager.stopAll();
+            this.musicPaused ? this.soundManager.stop('game_lose') : this.soundManager.play('game_lose');
         } else if (this.endbossDefeated) {
             // WIN-Bild anzeigen, wenn Endboss besiegt wurde
             let winImage = new Image();
             winImage.src = "assets/img/9_intro_outro_screens/win/win_2.png";
             winImage.onload = () => {
                 this.ctx.drawImage(winImage, 0, 0, this.canvas.width, this.canvas.height);
+                this.drawScreenIcons();
             };
             this.soundManager.stop('backgroundmusic');
-            this.soundManager.play('game_win');
+            this.musicPaused ? this.soundManager.stop('game_win') : this.soundManager.play('game_win');
         } else if (!this.gameRunning) {
             // Startbildschirm anzeigen, wenn das Spiel nicht läuft
             let startScreenImage = new Image();
             startScreenImage.src = 'assets/img/9_intro_outro_screens/start/startscreen_1.png';
             startScreenImage.onload = () => {
                 this.ctx.drawImage(startScreenImage, 0, 0, this.canvas.width, this.canvas.height);
-                this.drawStartScreenIcons();
+                this.drawScreenIcons();
             };
         } else if (this.gameRunning) {
-            // Standard Spielmodus, wenn das Spiel läuft
-            this.soundManager.play('backgroundmusic');
-            this.soundManager.loop('backgroundmusic', true);
-
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            if (this.musicPaused) {
+                this.soundManager.stop('backgroundmusic');
+                this.soundManager.loop('backgroundmusic', false);
+                this.soundManager.stop('chicken')
+            } else {
+                this.soundManager.play('backgroundmusic');
+                this.soundManager.loop('backgroundmusic', true);
+                this.soundManager.play('chicken');
+            }
             this.ctx.translate(this.camera_x, 0);
-
             this.addObjectsToMap(this.level.backgroundObjects);
             this.addObjectsToMap(this.level.clouds);
-
             this.ctx.translate(-this.camera_x, 0);
             this.addToMap(this.healthBar);
             this.addToMap(this.coinBar);
@@ -233,39 +245,44 @@ class World {
                 this.addToMap(this.bossHealthBar);
             }
             this.ctx.translate(this.camera_x, 0);
-
             this.addToMap(this.character);
-
             this.addObjectsToMap(this.level.enemies);
             this.addObjectsToMap(this.level.collectables);
             this.addObjectsToMap(this.throwableObject);
-
             this.ctx.translate(-this.camera_x, 0);
-
+            this.drawScreenIcons();
             this.animationFrameId = requestAnimationFrame(() => {
                 this.draw();
             });
         }
     }
 
-    drawStartScreenIcons() {
-        const icons = this.gameOver || this.endbossDefeated
-            ? [{ src: 'assets/img/10_icons/home.png', x: 720 / 2 - 25, y: 50 }]
-            : [
+    drawScreenIcons() {
+        let icons;
+        if (this.gameOver || this.endbossDefeated) {
+            icons = [{ src: 'assets/img/10_icons/home.png', x: 720 / 2 - 25, y: 50 }];
+        } else if (!this.gameRunning) {
+            icons = [
                 { src: 'assets/img/10_icons/instruction.png', x: 0 + 25, y: 50 },
                 { src: 'assets/img/10_icons/play.png', x: 720 / 2 - 25, y: 50 },
                 { src: 'assets/img/10_icons/fullscreen.png', x: 720 - 75, y: 50 }
             ];
+        } else if (this.gameRunning) {
+            icons = [{ src: 'assets/img/10_icons/music.png', x: 720 / 2 - 25, y: 50 }];
+        }
+        this.iconsStyling(icons);
+    }
 
+    iconsStyling(icons) {
         icons.forEach(icon => {
             this.ctx.beginPath();
-            this.ctx.arc(icon.x + 25, icon.y + 25, 32, 0, 2 * Math.PI);
+            this.ctx.arc(icon.x + 20, icon.y + 20, 32, 0, 2 * Math.PI);
             this.ctx.fillStyle = 'black';
             this.ctx.fill();
             this.ctx.closePath();
 
             this.ctx.beginPath();
-            this.ctx.arc(icon.x + 25, icon.y + 25, 30, 0, 2 * Math.PI);
+            this.ctx.arc(icon.x + 20, icon.y + 20, 30, 0, 2 * Math.PI);
             this.ctx.fillStyle = 'orange';
             this.ctx.fill();
             this.ctx.closePath();
@@ -273,18 +290,20 @@ class World {
             let iconImage = new Image();
             iconImage.src = icon.src;
             iconImage.onload = () => {
-                this.ctx.drawImage(iconImage, icon.x, icon.y, 50, 50);
+                this.ctx.drawImage(iconImage, icon.x, icon.y, 40, 40);
             };
         });
     }
 
     loadSound() {
         this.soundManager.loadSound('walking', 'assets/sounds/walking.mp3');
-        this.soundManager.setVolume('walking', 0.05);
+        this.soundManager.setVolume('walking', 0.08);
+        this.soundManager.loadSound('hurt', 'assets/sounds/hurt.mp3');
+        this.soundManager.setVolume('hurt', 0.08);
         this.soundManager.loadSound('jumping', 'assets/sounds/jump.mp3');
         this.soundManager.setVolume('jumping', 0.005);
         this.soundManager.loadSound('throw', 'assets/sounds/throw.mp3');
-        this.soundManager.setVolume('throw', 0.05);
+        this.soundManager.setVolume('throw', 0.3);
         this.soundManager.loadSound('backgroundmusic', 'assets/sounds/background_music.mp3');
         this.soundManager.setVolume('backgroundmusic', 0.02);
         this.soundManager.loadSound('chicken', 'assets/sounds/chicken.mp3');
@@ -313,13 +332,18 @@ class World {
                 return;
             }
 
-            if (this.character.x >= 1200 && !this.bossSpawned) {
-                const spawnX = this.character.x + 650;
+            if (this.character.x >= 1300 && !this.bossSpawned) {
+                const spawnX = this.character.x + 600;
                 const newEndboss = new Endboss();
-                this.soundManager.play('boss_chicken_start');
-                setTimeout(() => {
+                if (this.musicPaused) {
                     this.soundManager.stop('boss_chicken_start');
-                }, 800)
+                } else {
+                    this.soundManager.play('boss_chicken_start');
+                    setTimeout(() => {
+                        this.soundManager.stop('boss_chicken_start');
+                    }, 800)
+                }
+
                 newEndboss.x = spawnX;
                 this.bossHealthBar = new Statusbar('boss', 5, 500);
                 this.bossSpawned = true;
@@ -328,16 +352,15 @@ class World {
                 return;
             }
 
-            const numberOfChickens = Math.floor(Math.random() * 3) + 1;
-            const baseSpawnX = this.character.x + 650;
-
+            const numberOfChickens = Math.floor(Math.random() * 2) + 1;
+            const baseSpawnX = this.character.x + 800;
             for (let i = 0; i < numberOfChickens; i++) {
-                this.soundManager.play('chicken');
                 const newChicken = new Chicken();
                 newChicken.x = baseSpawnX + i * 100;
+                newChicken.id = crypto.randomUUID();
                 this.level.enemies.push(newChicken);
             }
-        }, 2000);
+        }, 1000);
     }
 
     spawnInitialCollectables() {
@@ -384,6 +407,7 @@ class World {
     checkCollisions() {
         this.level.enemies.forEach((enemy, index) => {
             if (enemy.isDeadStatus) return;
+
             if (this.character.isCollidingFromTop(enemy)) {
                 if (enemy instanceof Chicken) {
                     enemy.img = enemy.IMAGE_DEAD;
@@ -391,7 +415,7 @@ class World {
                     enemy.isDeadStatus = true;
                     this.soundManager.stop('chicken');
                     setTimeout(() => {
-                        this.level.enemies.splice(index, 1);  // Nur das getroffene Chicken wird entfernt
+                        this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id); // Nur dieses Chicken entfernen
                     }, 500);
                 }
                 return;
@@ -410,7 +434,7 @@ class World {
                     setTimeout(() => {
                         this.gameOver = true;
                         this.gameRunning = false;
-                    }, 1000)
+                    }, 1000);
                 }
             }
         });
@@ -429,7 +453,7 @@ class World {
                     this.bottleBar.setPercentage(this.bottleBar.percentage - 20);
                     this.throwCount = 0;
                 }
-                this.soundManager.play('throw');
+                this.musicPaused ? this.soundManager.stop('throw') : this.soundManager.play('throw');
             }
         }
 
@@ -440,29 +464,34 @@ class World {
             }
 
             this.level.enemies.forEach((enemy, enemyIndex) => {
-                if (bottle.isColliding(enemy) && !enemy.isDeadStatus) {  // Nur wenn das Chicken nicht tot ist
+                if (bottle.isColliding(enemy) && !enemy.isDeadStatus) {
                     bottle.broken = true;
                     if (enemy instanceof Endboss) {
                         enemy.hit(20);
                         enemy.isHurtStatus = true;
                         if (enemy.energy >= 20) {
-                            this.soundManager.play('boss_chicken_start');
-                            setTimeout(() => {
+                            if (this.musicPaused) {
                                 this.soundManager.stop('boss_chicken_start');
-                            }, 300)
+                            } else {
+                                this.soundManager.play('boss_chicken_start');
+                                setTimeout(() => {
+                                    this.soundManager.stop('boss_chicken_start');
+                                }, 300);
+                            }
+
                         }
                         if (enemy.isDead()) {
                             enemy.isDeadStatus = true;
-                            this.soundManager.play('boss_chicken_start');
+                            this.musicPaused ? this.soundManager.stop('boss_chicken_start') : this.soundManager.play('boss_chicken_start');
                             setTimeout(() => {
-                                this.level.enemies.splice(enemyIndex, 1);  // Nur das getroffene Chicken (Endboss) wird entfernt
+                                this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id);
                                 this.endbossDefeated = true;
                                 this.bossSpawned = false;
                             }, enemy.IMAGES_DEAD.length * 280);
                         }
                         this.bossHealthBar.setPercentage(enemy.energy);
                     } else {
-                        this.level.enemies.splice(enemyIndex, 1);  // Nur das getroffene Chicken wird entfernt
+                        this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id);
                     }
                 }
             });
@@ -474,7 +503,6 @@ class World {
             this.flipImage(mo);
         }
         mo.draw(this.ctx);
-        // mo.drawCollisonBorder(this.ctx);
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
