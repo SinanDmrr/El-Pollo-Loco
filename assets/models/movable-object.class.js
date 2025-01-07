@@ -76,40 +76,6 @@ class MovableObject extends DrawableObject {
         );
     }
 
-    //TODO Löschen wenn gekürzt alle
-    // isColliding(mo) {
-    //     const characterLeft = this.x + this.offsetX;
-    //     const characterRight = characterLeft + (this.width - this.offsetWidth);
-    //     const characterTop = this.y;
-    //     const characterBottom = this.y + this.height;
-
-    //     if (mo instanceof Endboss) {
-    //         const moLeft = mo.x + 20;
-    //         const moRight = mo.x + mo.width;
-    //         const moTop = mo.y;
-    //         const moBottom = mo.y + mo.height;
-
-    //         return (
-    //             characterRight > moLeft &&
-    //             characterLeft < moRight &&
-    //             characterBottom > moTop &&
-    //             characterTop < moBottom
-    //         );
-    //     } else {
-    //         const moLeft = mo.x;
-    //         const moRight = mo.x + mo.width;
-    //         const moTop = mo.y;
-    //         const moBottom = mo.y + mo.height;
-
-    //         return (
-    //             characterRight > moLeft &&
-    //             characterLeft < moRight &&
-    //             characterBottom > moTop &&
-    //             characterTop < moBottom
-    //         );
-    //     }
-    // }
-
     hit(dmg) {
         if (this.energy <= 0) {
             this.energy = 0;

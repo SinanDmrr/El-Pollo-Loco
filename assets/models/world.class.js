@@ -11,17 +11,9 @@ class World {
     endbossSpwaned = false;
     endbossDefeated = false;
     showInstruction = false;
-    // musicPaused = false;
-    musicIconImage;
     level = level1;
-    // canvas;
-    ctx;
-    keyboard;
-    // soundManager;
     camera_x = -100;
     lastCollectableSpawnX;
-    musicPaused;
-    iconImages = {};
 
     constructor(canvas, keyboard, soundManager) {
         this.ctx = canvas.getContext('2d');
@@ -78,34 +70,6 @@ class World {
         this.level.collectables = [];
     }
 
-    // TODO Nach kürzen löschen
-    // resetGame() {
-    //     this.gameRunning = false;
-    //     this.gameOver = false;
-    //     this.endbossDefeated = false;
-    //     this.character.deadAnimation = false;
-    //     this.character.energy = 100;
-    //     this.character.x = -1000;
-    //     this.healthBar.setPercentage(100);
-    //     this.bottleCount = 0;
-    //     this.coinBar.setPercentage(0);
-    //     this.bottleBar.setPercentage(0);
-    //     this.throwableObject = [];
-    //     this.level.enemies = [];
-    //     this.level.collectables = [];
-    //     this.bossSpawned = false;
-    //     this.character.deadAnimation = false;
-    //     this.character.x = -1000;
-    //     this.character.y = 220;
-    //     this.character.idleTimer = 0;
-    //     this.character.clearAllIntervals();
-    //     this.character.loadImage('assets/img/2_walk/W-21.png');
-    //     this.character.animate();
-    //     this.musicPaused = false;
-
-    //     this.draw();
-    // }
-
     pauseMusic() {
         if (!this.musicPaused) {
             this.musicPaused = true;
@@ -116,83 +80,91 @@ class World {
 
     canvasClickListener() {
         this.canvas.style.cursor = 'default';
-
-        this.canvas.addEventListener('mousemove', (event) => {
-            const scaleX = this.canvas.width / this.canvas.offsetWidth;
-            const scaleY = this.canvas.height / this.canvas.offsetHeight;
-
-            const mouseX = event.offsetX * scaleX;
-            const mouseY = event.offsetY * scaleY;
-
-            let isHovering = false;
-            let icons = [];
-            if (this.gameOver || this.endbossDefeated) {
-                icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' });
-            } else if (!this.gameRunning) {
-                icons = [
-                    { x: 50, y: 50 + 25, radius: 32, name: 'instruction' },
-                    { x: 720 / 2, y: 50 + 25, radius: 32, name: 'play' },
-                    { x: 720 - 50, y: 50 + 25, radius: 32, name: 'fullscreen' }
-                ];
-            } else if (this.gameRunning) {
-                icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'music' })
-            }
-
-            for (const icon of icons) {
-                const distance = Math.sqrt((mouseX - icon.x) ** 2 + (mouseY - icon.y) ** 2);
-                if (distance <= icon.radius) {
-                    isHovering = true;
-                    break;
-                }
-            }
-
-            this.canvas.style.cursor = isHovering ? 'pointer' : 'default';
-        });
+        this.mouseOverEventListener();
 
         this.canvas.addEventListener('click', (event) => {
-            const scaleX = this.canvas.width / this.canvas.offsetWidth;
-            const scaleY = this.canvas.height / this.canvas.offsetHeight;
+            const { x: clickX, y: clickY } = this.getMousePosition(event);
+            const icons = this.getIcons();
+            const clickedIcon = icons.find(icon => this.isHovering(clickX, clickY, icon));
 
-            const clickX = event.offsetX * scaleX;
-            const clickY = event.offsetY * scaleY;
-
-            let icons = [];
-            if (this.gameOver || this.endbossDefeated) {
-                icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' });
-            } else if (!this.gameRunning) {
-                icons = [
-                    { x: 50, y: 50 + 25, radius: 32, name: 'instruction' },
-                    { x: 720 / 2, y: 50 + 25, radius: 32, name: 'play' },
-                    { x: 720 - 50, y: 50 + 25, radius: 32, name: 'fullscreen' }
-                ];
-            } else if (this.gameRunning) {
-                icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'music' })
+            if (clickedIcon) {
+                this.handleIconClick(clickedIcon);
             }
+        });
+    }
 
-            for (const icon of icons) {
-                const distance = Math.sqrt((clickX - icon.x) ** 2 + (clickY - icon.y) ** 2);
-                if (distance <= icon.radius) {
-                    if (icon.name === 'home') {
-                        this.resetGame();
-                        this.soundManager.stop('game_lose');
-                        this.soundManager.stop('game_win');
-                        this.soundManager.stop('chicken');
-                    } else if (icon.name === 'play') {
-                        this.gameRunning = true;
-                        this.draw();
-                        this.spawnChicken();
-                        this.spawnInitialCollectables();
-                    } else if (icon.name === 'fullscreen') {
-                        this.toggleFullscreen(this.canvas);
-                    } else if (icon.name === 'instruction') {
-                        this.showInstruction = !this.showInstruction;
-                        this.showInstructions();
-                    } else if (icon.name === 'music') {
-                        this.pauseMusic();
-                    }
-                    return;
-                }
+    handleIconClick(icon) {
+        switch (icon.name) {
+            case 'home':
+                this.resetGame();
+                this.soundManager.stop('game_lose');
+                this.soundManager.stop('game_win');
+                this.soundManager.stop('chicken');
+                break;
+            case 'play':
+                this.gameRunning = true;
+                this.draw();
+                this.spawnChicken();
+                this.spawnInitialCollectables();
+                break;
+            case 'fullscreen':
+                this.toggleFullscreen(this.canvas);
+                break;
+            case 'instruction':
+                this.showInstruction = !this.showInstruction;
+                this.showInstructions();
+                break;
+            case 'music':
+                this.pauseMusic();
+                break;
+        }
+    }
+
+    getMousePosition(event) {
+        const scaleX = this.canvas.width / this.canvas.offsetWidth;
+        const scaleY = this.canvas.height / this.canvas.offsetHeight;
+        return {
+            x: event.offsetX * scaleX,
+            y: event.offsetY * scaleY
+        };
+    }
+
+    getIcons() {
+        let icons = [];
+        if (this.gameOver || this.endbossDefeated) {
+            icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' });
+        } else if (!this.gameRunning) {
+            icons = [
+                { x: 50, y: 50 + 25, radius: 32, name: 'instruction' },
+                { x: 720 / 2, y: 50 + 25, radius: 32, name: 'play' },
+                { x: 720 - 50, y: 50 + 25, radius: 32, name: 'fullscreen' }
+            ];
+        } else if (this.gameRunning) {
+            icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'music' });
+        }
+        return icons;
+    }
+
+    isHovering(mouseX, mouseY, icon) {
+        const distance = Math.sqrt((mouseX - icon.x) ** 2 + (mouseY - icon.y) ** 2);
+        return distance <= icon.radius;
+    }
+
+    checkHovering(icons, mouseX, mouseY) {
+        for (const icon of icons) {
+            if (this.isHovering(mouseX, mouseY, icon)) {
+                return true;
             }
+        }
+        return false;
+    }
+
+    mouseOverEventListener() {
+        this.canvas.addEventListener('mousemove', (event) => {
+            const { x: mouseX, y: mouseY } = this.getMousePosition(event);
+            const icons = this.getIcons();
+            const isHovering = this.checkHovering(icons, mouseX, mouseY);
+            this.canvas.style.cursor = isHovering ? 'pointer' : 'default';
         });
     }
 
@@ -398,9 +370,6 @@ class World {
         }, 100)
     }
 
-    /**
- * Startet das Spawn-Intervall für Hühner und den Endboss.
- */
     spawnChicken() {
         const spawnInterval = setInterval(() => {
             if (this.character.isDead()) {
@@ -445,45 +414,6 @@ class World {
             this.level.enemies.push(newChicken);
         }
     }
-
-    //TODO Nach dem kürzen löschen
-    // spawnChicken() {
-    //     const spawnInterval = setInterval(() => {
-    //         if (this.character.isDead()) {
-    //             clearInterval(spawnInterval);
-    //             return;
-    //         }
-
-    //         if (this.character.x >= 1300 && !this.bossSpawned) {
-    //             const spawnX = this.character.x + 600;
-    //             const newEndboss = new Endboss();
-    //             if (this.musicPaused) {
-    //                 this.soundManager.stop('boss_chicken_start');
-    //             } else {
-    //                 this.soundManager.play('boss_chicken_start');
-    //                 setTimeout(() => {
-    //                     this.soundManager.stop('boss_chicken_start');
-    //                 }, 800)
-    //             }
-
-    //             newEndboss.x = spawnX;
-    //             this.bossHealthBar = new Statusbar('boss', 5, 500);
-    //             this.bossSpawned = true;
-    //             this.level.enemies.push(newEndboss);
-    //             clearInterval(spawnInterval);
-    //             return;
-    //         }
-
-    //         const numberOfChickens = Math.floor(Math.random() * 2) + 1;
-    //         const baseSpawnX = this.character.x + 800;
-    //         for (let i = 0; i < numberOfChickens; i++) {
-    //             const newChicken = new Chicken();
-    //             newChicken.x = baseSpawnX + i * 100;
-    //             newChicken.id = crypto.randomUUID();
-    //             this.level.enemies.push(newChicken);
-    //         }
-    //     }, 1000);
-    // }
 
     spawnInitialCollectables() {
         this.lastCollectableSpawnX = this.character.x + 100;
@@ -567,45 +497,6 @@ class World {
             }, 1000);
         }
     }
-
-    //TODO nach dem kürzen entfernen
-    // checkCollisions() {
-    //     this.level.enemies.forEach((enemy, index) => {
-    //         if (enemy.isDeadStatus) return;
-
-    //         if (this.character.isCollidingFromTop(enemy)) {
-    //             if (enemy instanceof Chicken) {
-    //                 enemy.img = enemy.IMAGE_DEAD;
-    //                 enemy.loadImage(enemy.IMAGE_DEAD);
-    //                 enemy.isDeadStatus = true;
-    //                 this.soundManager.stop('chicken');
-    //                 setTimeout(() => {
-    //                     this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id); // Nur dieses Chicken entfernen
-    //                 }, 500);
-    //             }
-    //             return;
-    //         }
-
-    //         if (!this.character.isDead() && this.character.isColliding(enemy)) {
-    //             if (enemy instanceof Endboss) {
-    //                 this.character.hit(40);
-    //             } else {
-    //                 this.character.hit(20);
-    //             }
-    //             if (this.character.hurtSoundPlayed) {
-    //                 this.musicPaused ? this.soundManager.stop('hurt') : this.soundManager.play('hurt');
-    //                 this.character.hurtSoundPlayed = false;
-    //             }
-    //             this.healthBar.setPercentage(this.character.energy);
-    //             if (this.character.isDead() && !this.gameOver) {
-    //                 setTimeout(() => {
-    //                     this.gameOver = true;
-    //                     this.gameRunning = false;
-    //                 }, 1000);
-    //             }
-    //         }
-    //     });
-    // }
 
     checkThrowObjects() {
         this.throwBottle();
@@ -713,66 +604,6 @@ class World {
     handleEnemyHit(enemy) {
         this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id);
     }
-
-    //TODO Nach dem kürzen entfernen
-    // checkThrowObjects() {
-    //     if (this.keyboard.SPACE && this.throwableObject.length === 0 && !world.character.isDead()) {
-    //         if (this.bottleCount > 0) {
-    //             let bottle = new ThrowableObject(this.character.x, this.character.y);
-    //             this.throwableObject.push(bottle);
-
-    //             this.bottleCount--;
-    //             this.throwCount = (this.throwCount || 0) + 1;
-
-    //             if (this.throwCount >= 2) {
-    //                 this.bottleBar.setPercentage(this.bottleBar.percentage - 20);
-    //                 this.throwCount = 0;
-    //             }
-    //             this.musicPaused ? this.soundManager.stop('throw') : this.soundManager.play('throw');
-    //         }
-    //     }
-
-    //     this.throwableObject.forEach((bottle, index) => {
-    //         if (bottle.y >= 380 || bottle.broken) {
-    //             this.throwableObject.splice(index, 1);
-    //             return;
-    //         }
-
-    //         this.level.enemies.forEach((enemy, enemyIndex) => {
-    //             if (bottle.isColliding(enemy) && !enemy.isDeadStatus) {
-    //                 bottle.broken = true;
-    //                 if (enemy instanceof Endboss) {
-    //                     enemy.hit(20);
-    //                     enemy.isHurtStatus = true;
-    //                     if (enemy.energy >= 20) {
-    //                         if (this.musicPaused) {
-    //                             this.soundManager.stop('boss_chicken_start');
-    //                         } else {
-    //                             this.soundManager.play('boss_chicken_start');
-    //                             setTimeout(() => {
-    //                                 this.soundManager.stop('boss_chicken_start');
-    //                             }, 300);
-    //                         }
-
-    //                     }
-    //                     if (enemy.isDead()) {
-    //                         enemy.isDeadStatus = true;
-    //                         this.musicPaused ? this.soundManager.stop('boss_chicken_start') : this.soundManager.play('boss_chicken_start');
-    //                         setTimeout(() => {
-    //                             this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id);
-    //                             this.bossSpawned = false;
-    //                             this.endbossDefeated = true;
-    //                             this.drawScreenIcons();
-    //                         }, enemy.IMAGES_DEAD.length * 300);
-    //                     }
-    //                     this.bossHealthBar.setPercentage(enemy.energy);
-    //                 } else {
-    //                     this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id);
-    //                 }
-    //             }
-    //         });
-    //     });
-    // }
 
     addToMap(mo) {
         if (mo.otherDirection) {

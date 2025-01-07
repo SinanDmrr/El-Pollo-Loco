@@ -15,7 +15,6 @@ class Character extends MovableObject {
     collectedBottles = 0;
     hurtSoundPlayed = false;
 
-
     IMAGES_WALKING = [
         'assets/img/2_walk/W-21.png',
         'assets/img/2_walk/W-22.png',
@@ -176,58 +175,4 @@ class Character extends MovableObject {
             }
         }, 150);
     }
-
-    //TODO Nachdem kürzen löschen
-    // animate() {
-    //     const intervalMove = setInterval(() => {
-    //         intervalIds.push(intervalMove);
-    //         if (this.world.gameRunning) {
-    //             if (this.world.keyboard.UP && !this.isAboveGround()) {
-    //                 this.idleTimer = 0;
-    //                 this.jump();
-    //             } else if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-    //                 this.idleTimer = 0;
-    //                 this.moveRight();
-    //                 this.otherDirection = false;
-    //             } else if (this.world.keyboard.LEFT && this.x > this.world.level.level_begin_x) {
-    //                 this.idleTimer = 0;
-    //                 this.moveLeft();
-    //                 this.otherDirection = true;
-    //             } else {
-    //                 this.idleTimer++;
-    //             }
-
-    //             this.world.camera_x = -this.x + 100;
-    //         }
-
-    //     }, 1000 / 60);
-
-    //     const intervalAnimate = setInterval(() => {
-    //         intervalIds.push(intervalAnimate);
-    //         if (this.world.gameRunning) {
-    //             if (this.isDead() && !this.deadAnimation) {
-    //                 this.deadAnimation = true;
-    //                 this.playDeadAnimation();
-    //             } else if (this.isHurt()) {
-    //                 this.playAnimation(this.IMAGES_HURT);
-    //                 this.idleTimer = 0;
-    //             } else if (this.isAboveGround()) {
-    //                 this.playAnimation(this.IMAGES_JUMPING);
-    //                 this.world.musicPaused ? this.world.soundManager.stop('jumping') : this.world.soundManager.play('jumping');
-    //             } else if (this.world.keyboard.RIGHT && !this.isAboveGround() || this.world.keyboard.LEFT && !this.isAboveGround()) {
-    //                 this.playAnimation(this.IMAGES_WALKING);
-    //                 this.world.musicPaused ? this.world.soundManager.stop('walking') : this.world.soundManager.play('walking');
-    //             }
-    //             else {
-    //                 this.world.soundManager.stop('walking');
-    //                 this.world.soundManager.stop('jumping');
-    //                 if (this.idleTimer < this.idleSleep) {
-    //                     this.playAnimation(this.IMAGES_IDLE);
-    //                 } else {
-    //                     this.playAnimation(this.IMAGES_IDLE_LONG);
-    //                 }
-    //             }
-    //         }
-    //     }, 150);
-    // }
 }
