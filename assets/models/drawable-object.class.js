@@ -23,21 +23,4 @@ class DrawableObject {
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
-
-    drawCollisonBorder(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
-            ctx.beginPath();
-            ctx.lineWidth = '5';
-            ctx.strokeStyle = 'blue';
-
-            if (this instanceof Character) {
-                ctx.rect(this.x + this.offsetX, this.y, this.width - this.offsetWidth, this.height);
-            } else if (this instanceof Endboss) {
-                ctx.rect(this.x + 20, this.y, this.width, this.height);
-            } else {
-                ctx.rect(this.x, this.y, this.width, this.height);
-            }
-            ctx.stroke();
-        }
-    }
 }

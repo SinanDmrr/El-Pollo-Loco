@@ -46,24 +46,25 @@ class Statusbar extends DrawableObject {
         switch (type) {
             case 'coin':
                 this.IMAGES = this.IMAGES_COIN;
-                this.loadImages(this.IMAGES);
-                this.setPercentage(this.collectablePercentage);
+                this.loadAndSet(this.IMAGES, this.collectablePercentage);
                 break;
             case 'bottle':
                 this.IMAGES = this.IMAGES_BOTTLE;
-                this.loadImages(this.IMAGES);
-                this.setPercentage(this.collectablePercentage);
+                this.loadAndSet(this.IMAGES, this.collectablePercentage);
                 break;
             case 'boss':
                 this.IMAGES = this.IMAGES_ENDBOSS;
-                this.loadImages(this.IMAGES);
-                this.setPercentage(this.percentage);
+                this.loadAndSet(this.IMAGES, this.percentage);
                 break;
             default:
                 this.IMAGES = this.IMAGES_HEALTH;
-                this.loadImages(this.IMAGES);
-                this.setPercentage(this.percentage);
+                this.loadAndSet(this.IMAGES, this.percentage);
         }
+    }
+
+    loadAndSet(IMAGES, Percentage) {
+        this.loadImages(IMAGES);
+        this.setPercentage(Percentage);
     }
 
     setPercentage(percentage) {

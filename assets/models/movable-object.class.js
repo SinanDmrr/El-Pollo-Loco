@@ -47,11 +47,9 @@ class MovableObject extends DrawableObject {
         const characterRight = characterLeft + (this.width - this.offsetWidth);
         const characterTop = this.y;
         const characterBottom = this.y + this.height;
-
         const moLeft = mo.x;
         const moRight = mo.x + mo.width;
         const moTop = mo.y;
-
         return (
             characterRight > moLeft &&
             characterLeft < moRight &&
@@ -62,37 +60,55 @@ class MovableObject extends DrawableObject {
     }
 
     isColliding(mo) {
+        const moLeft = mo.x + (mo instanceof Endboss ? 20 : 0);
+        const moRight = mo.x + mo.width;
+        const moTop = mo.y;
+        const moBottom = mo.y + mo.height;
         const characterLeft = this.x + this.offsetX;
         const characterRight = characterLeft + (this.width - this.offsetWidth);
         const characterTop = this.y;
         const characterBottom = this.y + this.height;
-
-        if (mo instanceof Endboss) {
-            const moLeft = mo.x + 20;
-            const moRight = mo.x + mo.width;
-            const moTop = mo.y;
-            const moBottom = mo.y + mo.height;
-
-            return (
-                characterRight > moLeft &&
-                characterLeft < moRight &&
-                characterBottom > moTop &&
-                characterTop < moBottom
-            );
-        } else {
-            const moLeft = mo.x;
-            const moRight = mo.x + mo.width;
-            const moTop = mo.y;
-            const moBottom = mo.y + mo.height;
-
-            return (
-                characterRight > moLeft &&
-                characterLeft < moRight &&
-                characterBottom > moTop &&
-                characterTop < moBottom
-            );
-        }
+        return (
+            characterRight > moLeft &&
+            characterLeft < moRight &&
+            characterBottom > moTop &&
+            characterTop < moBottom
+        );
     }
+
+    //TODO Löschen wenn gekürzt alle
+    // isColliding(mo) {
+    //     const characterLeft = this.x + this.offsetX;
+    //     const characterRight = characterLeft + (this.width - this.offsetWidth);
+    //     const characterTop = this.y;
+    //     const characterBottom = this.y + this.height;
+
+    //     if (mo instanceof Endboss) {
+    //         const moLeft = mo.x + 20;
+    //         const moRight = mo.x + mo.width;
+    //         const moTop = mo.y;
+    //         const moBottom = mo.y + mo.height;
+
+    //         return (
+    //             characterRight > moLeft &&
+    //             characterLeft < moRight &&
+    //             characterBottom > moTop &&
+    //             characterTop < moBottom
+    //         );
+    //     } else {
+    //         const moLeft = mo.x;
+    //         const moRight = mo.x + mo.width;
+    //         const moTop = mo.y;
+    //         const moBottom = mo.y + mo.height;
+
+    //         return (
+    //             characterRight > moLeft &&
+    //             characterLeft < moRight &&
+    //             characterBottom > moTop &&
+    //             characterTop < moBottom
+    //         );
+    //     }
+    // }
 
     hit(dmg) {
         if (this.energy <= 0) {
@@ -101,7 +117,7 @@ class MovableObject extends DrawableObject {
             if (!this.isHurt()) {
                 this.timeAtLastHit = new Date().getTime();
                 this.energy -= dmg;
-                soundManager.play('hurt');
+                this.hurtSoundPlayed = true;
             }
         } else {
             this.energy -= dmg;

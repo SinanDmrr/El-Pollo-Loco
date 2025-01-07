@@ -52,27 +52,28 @@ class Endboss extends MovableObject {
 
     animate() {
         let animationFrameCounter = 0;
-
         const intervalEndboss = setInterval(() => {
             intervalIds.push(intervalEndboss);
             this.movementEndboss();
-            animationFrameCounter++;
-
-            if (animationFrameCounter > 10) {
-                if (this.isDeadStatus) {
-                    this.playAnimation(this.IMAGES_DEAD);
-                    this.y += 80;
-                } else if (this.isHurtStatus) {
-                    this.playAnimation(this.IMAGES_HURT);
-                    setTimeout(() => {
-                        this.isHurtStatus = false;
-                    }, this.IMAGES_HURT.length * 200);
-                } else {
-                    this.playAnimation(this.IMAGES_WALKING);
-                }
-                animationFrameCounter = 0;
-            }
+            this.handleAnimations(animationFrameCounter);
+            animationFrameCounter = (animationFrameCounter > 10) ? 0 : animationFrameCounter + 1;
         }, 1000 / 60);
+    }
+
+    handleAnimations(frameCounter) {
+        if (frameCounter > 10) {
+            if (this.isDeadStatus) {
+                this.playAnimation(this.IMAGES_DEAD);
+                this.y += 80;
+            } else if (this.isHurtStatus) {
+                this.playAnimation(this.IMAGES_HURT);
+                setTimeout(() => {
+                    this.isHurtStatus = false;
+                }, this.IMAGES_HURT.length * 200);
+            } else {
+                this.playAnimation(this.IMAGES_WALKING);
+            }
+        }
     }
 
     randomDirection() {
@@ -80,30 +81,94 @@ class Endboss extends MovableObject {
     }
 
     movementEndboss() {
-        const leftLimit = 1700;
-        const rightLimit = 2000;
+        this.handleDirectionChange();
+        if (!this.isDeadStatus) {
+            this.moveInCurrentDirection();
+        }
+    }
 
-        let directionChangeInterval = 1000;
-
+    handleDirectionChange() {
+        const directionChangeInterval = 1000;
         if (Date.now() - this.lastDirectionChange > directionChangeInterval) {
             this.currentDirection = this.randomDirection();
             this.lastDirectionChange = Date.now();
         }
+    }
 
-        if (!this.isDeadStatus) {
-            if (this.currentDirection === 'left') {
-                if (this.x > leftLimit) {
-                    this.moveLeft(this.speed);
-                } else {
-                    this.currentDirection = 'right';
-                }
-            } else if (this.currentDirection === 'right') {
-                if (this.x < rightLimit) {
-                    this.moveRight(this.speed);
-                } else {
-                    this.currentDirection = 'left';
-                }
-            }
+    moveInCurrentDirection() {
+        const leftLimit = 1700;
+        const rightLimit = 2000;
+
+        if (this.currentDirection === 'left') {
+            this.moveLeftWithinLimit(leftLimit);
+        } else if (this.currentDirection === 'right') {
+            this.moveRightWithinLimit(rightLimit);
         }
     }
+
+    moveLeftWithinLimit(leftLimit) {
+        if (this.x > leftLimit) {
+            this.moveLeft(this.speed);
+        } else {
+            this.currentDirection = 'right';
+        }
+    }
+
+    moveRightWithinLimit(rightLimit) {
+        if (this.x < rightLimit) {
+            this.moveRight(this.speed);
+        } else {
+            this.currentDirection = 'left';
+        }
+    }
+
+    //TODO raus löschen wenn kürzung beendet ist
+    // animate() {
+    //     let animationFrameCounter = 0;
+    //     const intervalEndboss = setInterval(() => {
+    //         intervalIds.push(intervalEndboss);
+    //         this.movementEndboss();
+    //         animationFrameCounter++;
+
+    //         if (animationFrameCounter > 10) {
+    //             if (this.isDeadStatus) {
+    //                 this.playAnimation(this.IMAGES_DEAD);
+    //                 this.y += 80;
+    //             } else if (this.isHurtStatus) {
+    //                 this.playAnimation(this.IMAGES_HURT);
+    //                 setTimeout(() => {
+    //                     this.isHurtStatus = false;
+    //                 }, this.IMAGES_HURT.length * 200);
+    //             } else {
+    //                 this.playAnimation(this.IMAGES_WALKING);
+    //             }
+    //             animationFrameCounter = 0;
+    //         }
+    //     }, 1000 / 60);
+    // }
+
+    // movementEndboss() {
+    //     const leftLimit = 1700;
+    //     const rightLimit = 2000;
+    //     let directionChangeInterval = 1000;
+    //     if (Date.now() - this.lastDirectionChange > directionChangeInterval) {
+    //         this.currentDirection = this.randomDirection();
+    //         this.lastDirectionChange = Date.now();
+    //     }
+    //     if (!this.isDeadStatus) {
+    //         if (this.currentDirection === 'left') {
+    //             if (this.x > leftLimit) {
+    //                 this.moveLeft(this.speed);
+    //             } else {
+    //                 this.currentDirection = 'right';
+    //             }
+    //         } else if (this.currentDirection === 'right') {
+    //             if (this.x < rightLimit) {
+    //                 this.moveRight(this.speed);
+    //             } else {
+    //                 this.currentDirection = 'left';
+    //             }
+    //         }
+    //     }
+    // }
 }

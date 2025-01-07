@@ -24,14 +24,11 @@ class Chicken extends MovableObject {
 
     animate() {
         let animationFrameCounter = 0;
-
         const intervalChicken = setInterval(() => {
             if (!this.isDeadStatus) {
                 intervalIds.push(intervalChicken);
                 this.moveLeft(this.speed);
-
                 animationFrameCounter++;
-
                 if (animationFrameCounter > 11) {
                     this.playAnimation(this.IMAGES_WALKING);
                     animationFrameCounter = 0;
