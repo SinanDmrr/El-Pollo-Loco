@@ -28,7 +28,22 @@
         <h1>El Pollo Loco</h1>
       </header>
       <main>
-        <canvas id="canvas" width="720" height="480"></canvas>        
+        <div id="orientation-warning" class="hidden">
+          Please turn your device to play          
+        </div>    
+        <div>
+          <canvas id="canvas" width="720" height="480" class="hidden"></canvas>
+          <div id="mobile-controls" class="hidden">
+            <div>
+              <button class="btn-left" ontouchstart="setKey('LEFT', true)" ontouchend="setKey('LEFT', false)">⬅</button>
+              <button class="btn-right" ontouchstart="setKey('RIGHT', true)" ontouchend="setKey('RIGHT', false)">➡</button> 
+            </div>         
+            <div>            
+              <button class="btn-throw" ontouchstart="setKey('SPACE', true)" ontouchend="setKey('SPACE', false)">💣</button>
+              <button class="btn-jump" ontouchstart="setKey('UP', true)" ontouchend="setKey('UP', false)">⤴</button>
+            </div>
+          </div>
+        </div>
       </main>
       <footer>
         <div class="footer-content">

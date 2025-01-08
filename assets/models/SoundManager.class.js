@@ -74,4 +74,33 @@ class SoundManager {
             this.stop(soundName);
         }
     }
+
+    loadStartSounds() {
+        this.loadSound('walking', 'assets/sounds/walking.mp3');
+        this.setVolume('walking', 0.08);
+        this.loadSound('hurt', 'assets/sounds/hurt.mp3');
+        this.setVolume('hurt', 0.08);
+        this.loadSound('jumping', 'assets/sounds/jump.mp3');
+        this.setVolume('jumping', 0.005);
+        this.loadSound('throw', 'assets/sounds/throw.mp3');
+        this.setVolume('throw', 0.3);
+        this.loadSound('backgroundmusic', 'assets/sounds/background_music.mp3');
+        this.setVolume('backgroundmusic', 0.02);
+        this.loadSound('chicken', 'assets/sounds/chicken.mp3');
+        this.loadSound('game_win', 'assets/sounds/game_win.mp3');
+        this.loadSound('game_lose', 'assets/sounds/game_lose.mp3');
+        this.loadSound('boss_chicken_start', 'assets/sounds/boss_chicken_start.mp3');
+    }
+
+    checkMusic(musicPaused) {
+        if (musicPaused) {
+            this.stop('backgroundmusic');
+            this.loop('backgroundmusic', false);
+            this.stop('chicken')
+        } else {
+            this.play('backgroundmusic');
+            this.loop('backgroundmusic', true);
+            this.play('chicken');
+        }
+    }
 }

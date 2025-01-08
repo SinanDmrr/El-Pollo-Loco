@@ -22,12 +22,15 @@ class World {
         this.canvas = canvas
         this.draw();
         this.setWorld();
+
+        this.soundManager.loadStartSounds();
         this.run();
-        this.loadSound();
+        // this.loadSound();
         this.canvasClickListener();
         this.musicIconImage = this.character.loadImage('assets/img/10_icons/music.png');
         this.musicPaused = false;
         this.drawScreenIcons();
+
     }
 
     resetGame() {
@@ -78,6 +81,7 @@ class World {
         }
     }
 
+    //TODO AB hier UI CLASS VERMUTLICH
     canvasClickListener() {
         this.canvas.style.cursor = 'default';
         this.mouseOverEventListener();
@@ -176,7 +180,7 @@ class World {
         } else if (!this.gameRunning) {
             this.drawStartScreen();
         } else if (this.gameRunning) {
-            this.checkMusic();
+            this.soundManager.checkMusic(this.musicPaused);
             this.drawBackgroundAndObjects()
             this.drawScreenIcons();
             this.animationFrameId = requestAnimationFrame(() => {
@@ -239,18 +243,6 @@ class World {
             this.ctx.drawImage(startScreenImage, 0, 0, this.canvas.width, this.canvas.height);
             this.drawScreenIcons();
         };
-    }
-
-    checkMusic() {
-        if (this.musicPaused) {
-            this.soundManager.stop('backgroundmusic');
-            this.soundManager.loop('backgroundmusic', false);
-            this.soundManager.stop('chicken')
-        } else {
-            this.soundManager.play('backgroundmusic');
-            this.soundManager.loop('backgroundmusic', true);
-            this.soundManager.play('chicken');
-        }
     }
 
     drawScreenIcons() {
@@ -339,23 +331,7 @@ class World {
             });
         }
     }
-
-    loadSound() {
-        this.soundManager.loadSound('walking', 'assets/sounds/walking.mp3');
-        this.soundManager.setVolume('walking', 0.08);
-        this.soundManager.loadSound('hurt', 'assets/sounds/hurt.mp3');
-        this.soundManager.setVolume('hurt', 0.08);
-        this.soundManager.loadSound('jumping', 'assets/sounds/jump.mp3');
-        this.soundManager.setVolume('jumping', 0.005);
-        this.soundManager.loadSound('throw', 'assets/sounds/throw.mp3');
-        this.soundManager.setVolume('throw', 0.3);
-        this.soundManager.loadSound('backgroundmusic', 'assets/sounds/background_music.mp3');
-        this.soundManager.setVolume('backgroundmusic', 0.02);
-        this.soundManager.loadSound('chicken', 'assets/sounds/chicken.mp3');
-        this.soundManager.loadSound('game_win', 'assets/sounds/game_win.mp3');
-        this.soundManager.loadSound('game_lose', 'assets/sounds/game_lose.mp3');
-        this.soundManager.loadSound('boss_chicken_start', 'assets/sounds/boss_chicken_start.mp3');
-    }
+    //TODO Bis hier hin UI CLASS VERMUTLICH
 
     setWorld() {
         this.character.world = this;

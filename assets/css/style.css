@@ -30,6 +30,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 header {
@@ -46,6 +47,33 @@ header h1 {
   font-size: 7rem;
 }
 
+#mobile-controls {
+  display: flex;
+  width: 95%;
+  margin-top: -70px;
+  margin-bottom: 100;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: space-between;
+}
+#mobile-controls div {
+  gap: 20px;
+}
+#mobile-controls button {
+  background-color: #512b0c;
+  color: #ffc493;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 2rem;
+  border: 2px solid #333333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#mobile-controls button:hover {
+  background-color: #ffc493;
+  color: #333333;
+}
+
 main {
   flex-grow: 1;
   display: flex;
@@ -53,6 +81,23 @@ main {
   justify-content: center;
   align-items: start;
   color: #d4d4d4;
+  margin-bottom: 1px;
+}
+main #orientation-warning {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.5rem;
+  z-index: 1000;
+}
+main .hidden {
+  display: none;
 }
 main canvas {
   background-color: black;
@@ -73,13 +118,54 @@ footer {
   padding: 10px;
 }
 
-@media only screen and (max-width: 760px) {
+@media (max-height: 740px) {
+  h1 {
+    display: none;
+  }
   canvas {
     width: 100%;
+    height: 90vh;
+  }
+  #orientation-warning {
+    font-size: 1.2rem;
+  }
+  footer {
+    padding: 0;
   }
 }
-@media only screen and (max-width: 480px) {
-  canvas {
-    width: 100vh;
+@media (max-height: 560px) {
+  main {
+    flex-direction: row;
+  }
+  #mobile-controls {
+    margin-top: -60px;
+  }
+  #mobile-controls button {
+    font-size: 1.5rem !important;
+  }
+  #mobile-controls .footer-info {
+    display: none;
+  }
+}
+@media (max-height: 460px) {
+  #mobile-controls {
+    margin-top: -50px;
+  }
+  #mobile-controls button {
+    font-size: 1rem !important;
+  }
+  #mobile-controls .footer-info {
+    display: none;
+  }
+  .footer-info {
+    display: none;
+  }
+}
+@media (max-height: 400px) {
+  #mobile-controls {
+    margin-top: -40px;
+  }
+  #mobile-controls button {
+    font-size: 0.7rem !important;
   }
 }/*# sourceMappingURL=style.css.map */
