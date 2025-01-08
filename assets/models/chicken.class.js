@@ -22,6 +22,10 @@ class Chicken extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Animates the object by moving it to the left and playing the walking animation.
+     * Continues the animation until the object is dead.
+     */
     animate() {
         let animationFrameCounter = 0;
         const intervalChicken = setInterval(() => {

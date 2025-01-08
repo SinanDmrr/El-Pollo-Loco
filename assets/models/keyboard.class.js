@@ -7,6 +7,10 @@ class KeyboardKey {
         this.SPACE = false;
     }
 
+    /**
+     * Handles the keydown event and updates the corresponding key state.
+     * @param {KeyboardEvent} event - The keyboard event.
+     */
     keyDown(event) {
         switch (event.key) {
             case "ArrowUp":
@@ -34,6 +38,11 @@ class KeyboardKey {
                 break;
         }
     }
+
+    /**
+     * Handles the keyup event and updates the corresponding key state.
+     * @param {KeyboardEvent} event - The keyboard event.
+     */
 
     keyUp(event) {
         switch (event.key) {

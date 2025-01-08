@@ -85,6 +85,10 @@ class Character extends MovableObject {
         this.applyGravity();
     }
 
+    /**
+     * Handles the movement and animation of the character by updating intervals for movement and animation.
+    * Checks the game's state to handle appropriate movement and camera positioning.
+    */
     animate() {
         const intervalMove = setInterval(() => {
             intervalIds.push(intervalMove);
@@ -102,6 +106,10 @@ class Character extends MovableObject {
         }, 150);
     }
 
+    /**
+    * Handles character movement based on keyboard input.
+    * Moves the character up, left, or right, or increments idle time if no input is given.
+    */
     handleMovement() {
         if (this.world.keyboard.UP && !this.isAboveGround()) {
             this.idleTimer = 0;
@@ -119,6 +127,10 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Handles the character's animation based on the current state.
+     * Plays the appropriate animation depending on whether the character is dead, hurt, jumping, walking, or idle.
+     */
     handleAnimations() {
         if (this.isDead() && !this.deadAnimation) {
             this.deadAnimation = true;
@@ -134,21 +146,34 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Plays the hurt animation and resets the idle timer.
+     */
     handleHurtAnimation() {
         this.playAnimation(this.IMAGES_HURT);
         this.idleTimer = 0;
     }
 
+    /**
+     * Plays the jumping animation and manages the jumping sound.
+     */
     handleJumpingAnimation() {
         this.playAnimation(this.IMAGES_JUMPING);
         this.world.musicPaused ? this.world.soundManager.stop('jumping') : this.world.soundManager.play('jumping');
     }
 
+    /**
+     * Plays the walking animation and manages the walking sound.
+    */
     handleWalkingAnimation() {
         this.playAnimation(this.IMAGES_WALKING);
         this.world.musicPaused ? this.world.soundManager.stop('walking') : this.world.soundManager.play('walking');
     }
 
+    /**
+     * Plays the idle animation based on the idle timer, switching to a long idle animation after a certain time.
+     * Stops any walking or jumping sounds.
+     */
     handleIdleAnimation() {
         this.world.soundManager.stop('walking');
         this.world.soundManager.stop('jumping');
@@ -159,10 +184,17 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Checks if the character is currently walking based on keyboard input.
+     * @returns {boolean} - True if the character is walking, otherwise false.
+     */
     isWalking() {
         return this.world.keyboard.RIGHT && !this.isAboveGround() || this.world.keyboard.LEFT && !this.isAboveGround();
     }
 
+    /**
+     * Plays the dead animation and stops all intervals while doing so.
+     */
     playDeadAnimation() {
         this.clearAllIntervals();
         let index = 0;

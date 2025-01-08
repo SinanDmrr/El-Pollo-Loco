@@ -12,12 +12,21 @@ class SoundManager {
         return SoundManager.instance || new SoundManager();
     }
 
+    /**
+     * Loads a sound from the given source and assigns it a name.
+     * @param {string} name - The name to assign to the sound.
+     * @param {string} src - The source path of the sound file.
+     */
     loadSound(name, src) {
         const sound = new Audio(src);
         sound.volume = 0.03;
         this.sounds[name] = sound;
     }
 
+    /**
+     * Plays the sound associated with the given name.
+     * @param {string} name - The name of the sound to play.
+     */
     play(name) {
         const sound = this.sounds[name];
         if (sound) {
@@ -29,6 +38,10 @@ class SoundManager {
         }
     }
 
+    /**
+     * Stops the sound associated with the given name.
+     * @param {string} name - The name of the sound to stop.
+     */
     stop(name) {
         const sound = this.sounds[name];
         if (sound) {
@@ -39,6 +52,11 @@ class SoundManager {
         }
     }
 
+    /**
+     * Sets the volume for the sound associated with the given name.
+     * @param {string} name - The name of the sound to adjust.
+     * @param {number} volume - The volume level to set (between 0.0 and 1.0).
+     */
     setVolume(name, volume) {
         const sound = this.sounds[name];
         if (sound) {
@@ -48,6 +66,11 @@ class SoundManager {
         }
     }
 
+    /**
+     * Sets whether the sound associated with the given name should loop.
+     * @param {string} name - The name of the sound to loop.
+     * @param {boolean} [loop=true] - Whether the sound should loop.
+     */
     loop(name, loop = true) {
         const sound = this.sounds[name];
         if (sound) {
@@ -57,24 +80,36 @@ class SoundManager {
         }
     }
 
+    /**
+     * Plays all loaded sounds.
+     */
     playAll() {
         for (let soundName in this.sounds) {
             this.sounds[soundName].play();
         }
     }
 
+    /**
+     * Pauses all loaded sounds.
+     */
     pauseAll() {
         for (let soundName in this.sounds) {
             this.sounds[soundName].pause();
         }
     }
 
+    /**
+     * Stops all loaded sounds.
+     */
     stopAll() {
         for (let soundName in this.sounds) {
             this.stop(soundName);
         }
     }
 
+    /**
+     * Loads the initial set of sounds used in the game.
+     */
     loadStartSounds() {
         this.loadSound('walking', 'assets/sounds/walking.mp3');
         this.setVolume('walking', 0.08);
@@ -92,11 +127,15 @@ class SoundManager {
         this.loadSound('boss_chicken_start', 'assets/sounds/boss_chicken_start.mp3');
     }
 
+    /**
+     * Checks the current music status and plays or stops the background and chicken sounds accordingly.
+     * @param {boolean} musicPaused - Indicates whether the music should be paused.
+     */
     checkMusic(musicPaused) {
         if (musicPaused) {
             this.stop('backgroundmusic');
             this.loop('backgroundmusic', false);
-            this.stop('chicken')
+            this.stop('chicken');
         } else {
             this.play('backgroundmusic');
             this.loop('backgroundmusic', true);

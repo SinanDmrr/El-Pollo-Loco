@@ -62,17 +62,30 @@ class Statusbar extends DrawableObject {
         }
     }
 
+    /**
+     * Loads images and sets the percentage to determine the current image.
+     * @param {string[]} IMAGES - An array of image paths to load.
+     * @param {number} Percentage - The percentage to set and determine the current image.
+     */
     loadAndSet(IMAGES, Percentage) {
         this.loadImages(IMAGES);
         this.setPercentage(Percentage);
     }
 
+    /**
+     * Sets the percentage and updates the current image based on the percentage.
+     * @param {number} percentage - The percentage to set.
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         let path = this.IMAGES[this.getIndexOfImage()];
         this.img = this.imgCache[path];
     }
 
+    /**
+     * Gets the index of the image based on the current percentage.
+     * @returns {number} The index of the image corresponding to the current percentage.
+     */
     getIndexOfImage() {
         if (this.percentage === 100) {
             return 5;

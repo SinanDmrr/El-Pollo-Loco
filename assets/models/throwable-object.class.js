@@ -29,6 +29,10 @@ class ThrowableObject extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Throws an object by setting its speed and applying gravity.
+     * Starts a movement in the x direction based on the object's orientation.
+     */
     throw() {
         this.soundManager.play('throw');
         this.speedY = 20;
@@ -40,6 +44,11 @@ class ThrowableObject extends MovableObject {
         }, 30);
     }
 
+    /**
+     * Checks if the current object is colliding with another object (enemy).
+     * @param {Object} enemy - The enemy object to check for collision.
+     * @returns {boolean} - True if the objects are colliding, otherwise false.
+     */
     isColliding(enemy) {
         return (
             this.x + this.width > enemy.x &&
@@ -49,6 +58,10 @@ class ThrowableObject extends MovableObject {
         );
     }
 
+    /**
+     * Animates the object by rotating and playing an animation until it reaches a certain y position or breaks.
+     * If the object reaches the splash point, it switches to a splash animation.
+     */
     animate() {
         let rotationInterval = setInterval(() => {
             if (this.y >= 330 || this.broken) {
