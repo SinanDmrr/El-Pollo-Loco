@@ -5,6 +5,7 @@ class MovableObject extends DrawableObject {
     acceleration = 2;
     energy = 100;
     timeAtLastHit = 0;
+    isAboveChicken = false;
 
     playAnimation(images) {
         let i = this.currentImage % images.length;
@@ -27,7 +28,7 @@ class MovableObject extends DrawableObject {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
             }
-        }, 1000 / 30)
+        }, 1000 / 30);
     }
 
     isAboveGround() {
@@ -47,20 +48,22 @@ class MovableObject extends DrawableObject {
         const characterRight = characterLeft + (this.width - this.offsetWidth);
         const characterTop = this.y;
         const characterBottom = this.y + this.height;
-        const moLeft = mo.x;
-        const moRight = mo.x + mo.width;
+        const moLeft = mo.x + 10;
+        const moRight = mo.x + mo.width - 30;
         const moTop = mo.y;
+
         return (
+            this.speedY < 0 &&
             characterRight > moLeft &&
             characterLeft < moRight &&
             characterBottom > moTop &&
             characterTop < moTop &&
-            characterBottom < 420
+            this.y < mo.y
         );
     }
 
     isColliding(mo) {
-        const moLeft = mo.x + (mo instanceof Endboss ? 20 : 0);
+        const moLeft = mo.x;
         const moRight = mo.x + mo.width;
         const moTop = mo.y;
         const moBottom = mo.y + mo.height;

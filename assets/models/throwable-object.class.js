@@ -15,7 +15,7 @@ class ThrowableObject extends MovableObject {
         'assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png'
     ];
 
-    constructor(x, y) {
+    constructor(x, y, otherDirection) {
         super().loadImage('assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png');
         this.loadImages(this.rotationImages);
         this.loadImages(this.splashImages);
@@ -23,6 +23,7 @@ class ThrowableObject extends MovableObject {
         this.y = y + 100;
         this.height = 60;
         this.width = 60;
+        this.otherDirection = otherDirection;
         this.soundManager = SoundManager.getInstance();
         this.throw();
         this.animate();
@@ -30,11 +31,12 @@ class ThrowableObject extends MovableObject {
 
     throw() {
         this.soundManager.play('throw');
-        this.speedY = 10;
-        this.speedX = 20;
+        this.speedY = 20;
+        this.speedX = 25;
         this.applyGravity();
         setInterval(() => {
-            this.x += this.speedX;
+            this.otherDirection ? this.x -= this.speedX : this.x += this.speedX;
+
         }, 30);
     }
 

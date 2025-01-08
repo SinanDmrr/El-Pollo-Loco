@@ -46,7 +46,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_ALERT);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
-        this.speed = 2;
+        this.speed = 3.5;
         this.animate();
     }
 
@@ -88,7 +88,7 @@ class Endboss extends MovableObject {
     }
 
     handleDirectionChange() {
-        const directionChangeInterval = 1000;
+        const directionChangeInterval = 500;
         if (Date.now() - this.lastDirectionChange > directionChangeInterval) {
             this.currentDirection = this.randomDirection();
             this.lastDirectionChange = Date.now();
@@ -96,7 +96,7 @@ class Endboss extends MovableObject {
     }
 
     moveInCurrentDirection() {
-        const leftLimit = 1700;
+        const leftLimit = 1500;
         const rightLimit = 2000;
 
         if (this.currentDirection === 'left') {

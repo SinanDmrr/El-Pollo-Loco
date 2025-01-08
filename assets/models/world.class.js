@@ -20,17 +20,15 @@ class World {
         this.keyboard = keyboard;
         this.soundManager = soundManager;
         this.canvas = canvas
+        this.images = {};
+        this.preloadImages();
         this.draw();
         this.setWorld();
-
         this.soundManager.loadStartSounds();
         this.run();
-        // this.loadSound();
         this.canvasClickListener();
-        this.musicIconImage = this.character.loadImage('assets/img/10_icons/music.png');
-        this.musicPaused = false;
+        this.musicPaused = localStorage.getItem('musicPaused') === 'true';
         this.drawScreenIcons();
-
     }
 
     resetGame() {
@@ -79,9 +77,9 @@ class World {
         } else {
             this.musicPaused = false;
         }
+        localStorage.setItem('musicPaused', this.musicPaused);
     }
 
-    //TODO AB hier UI CLASS VERMUTLICH
     canvasClickListener() {
         this.canvas.style.cursor = 'default';
         this.mouseOverEventListener();
@@ -140,8 +138,7 @@ class World {
         } else if (!this.gameRunning) {
             icons = [
                 { x: 50, y: 50 + 25, radius: 32, name: 'instruction' },
-                { x: 720 / 2, y: 50 + 25, radius: 32, name: 'play' },
-                { x: 720 - 50, y: 50 + 25, radius: 32, name: 'fullscreen' }
+                { x: 720 / 2, y: 50 + 25, radius: 32, name: 'play' }
             ];
         } else if (this.gameRunning) {
             icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'music' });
@@ -186,6 +183,21 @@ class World {
             this.animationFrameId = requestAnimationFrame(() => {
                 this.draw();
             });
+        }
+    }
+
+    preloadImages() {
+        const iconPaths = {
+            home: 'assets/img/10_icons/home.png',
+            instruction: 'assets/img/10_icons/instruction.png',
+            play: 'assets/img/10_icons/play.png',
+            music: 'assets/img/10_icons/music.png',
+        };
+
+        for (const [name, path] of Object.entries(iconPaths)) {
+            const img = new Image();
+            img.src = path;
+            this.images[name] = img;
         }
     }
 
@@ -248,15 +260,14 @@ class World {
     drawScreenIcons() {
         let icons;
         if (this.gameOver || this.endbossDefeated) {
-            icons = [{ src: 'assets/img/10_icons/home.png', x: 720 / 2 - 25, y: 50 }];
+            icons = [{ img: this.images.home, x: 720 / 2 - 25, y: 50 }];
         } else if (!this.gameRunning) {
             icons = [
-                { src: 'assets/img/10_icons/instruction.png', x: 0 + 25, y: 50 },
-                { src: 'assets/img/10_icons/play.png', x: 720 / 2 - 25, y: 50 },
-                { src: 'assets/img/10_icons/fullscreen.png', x: 720 - 75, y: 50 }
+                { img: this.images.instruction, x: 0 + 25, y: 50 },
+                { img: this.images.play, x: 720 / 2 - 25, y: 50 }
             ];
         } else if (this.gameRunning) {
-            icons = [{ src: 'assets/img/10_icons/music.png', x: 720 / 2 - 25, y: 50 }];
+            icons = [{ img: this.images.music, x: 720 / 2 - 25, y: 50 }];
         }
         this.iconsStyling(icons);
     }
@@ -264,15 +275,7 @@ class World {
     iconsStyling(icons) {
         icons.forEach(icon => {
             this.circleStyling(icon);
-            let iconImage = new Image();
-            iconImage.src = icon.src;
-            if (this.gameRunning) {
-                this.ctx.drawImage(iconImage, icon.x, icon.y, 40, 40);
-            } else {
-                iconImage.onload = () => {
-                    this.ctx.drawImage(iconImage, icon.x, icon.y, 40, 40);
-                };
-            }
+            this.ctx.drawImage(icon.img, icon.x, icon.y, 40, 40);
         });
     }
 
@@ -314,24 +317,6 @@ class World {
         this.ctx.fillText(introRight, this.canvas.width / 2, this.canvas.height / 2 - (-25));
         this.ctx.fillText(introThrow, this.canvas.width / 2, this.canvas.height / 2 - (-50));
     }
-
-    toggleFullscreen(canvas) {
-        if (!document.fullscreenElement) {
-            canvas.requestFullscreen().then(() => {
-                canvas.width = this.window.innerWidth;
-                canvas.height = this.window.innerHeight;
-            }).catch(err => {
-                console.error(`Fullscreen-Fehler: ${err.message} (${err.name})`);
-            });
-        } else {
-            document.exitFullscreen().then(() => {
-                canvas.width = 720;
-                canvas.height = 480;
-                this.draw();
-            });
-        }
-    }
-    //TODO Bis hier hin UI CLASS VERMUTLICH
 
     setWorld() {
         this.character.world = this;
@@ -451,7 +436,7 @@ class World {
         enemy.isDeadStatus = true;
         this.soundManager.stop('chicken');
         setTimeout(() => {
-            this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id); // Nur dieses Chicken entfernen
+            this.level.enemies = this.level.enemies.filter(e => e.id !== enemy.id);
         }, 500);
     }
 
@@ -490,7 +475,7 @@ class World {
     }
 
     createThrowableBottle() {
-        let bottle = new ThrowableObject(this.character.x, this.character.y);
+        let bottle = new ThrowableObject(this.character.x, this.character.y, this.character.otherDirection);
         this.throwableObject.push(bottle);
     }
 
