@@ -124,8 +124,18 @@ class UIManager {
      */
     iconsStyling(icons) {
         icons.forEach(icon => {
-            this.circleStyling(icon);
-            this.ctx.drawImage(icon.img, icon.x, icon.y, 40, 40);
+            // this.circleStyling(icon);
+            // this.ctx.drawImage(icon.img, icon.x, icon.y, 40, 40);
+            if (!icon.img.complete) {
+                icon.img.onload = () => {
+                    this.circleStyling(icon);
+                    this.ctx.drawImage(icon.img, icon.x, icon.y, 40, 40);
+                };
+            } else {
+                // If already loaded, draw immediately
+                this.circleStyling(icon);
+                this.ctx.drawImage(icon.img, icon.x, icon.y, 40, 40);
+            }
         });
     }
 

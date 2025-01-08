@@ -1,5 +1,5 @@
 class SoundManager {
-    constructor() {
+    constructor(world) {
         if (SoundManager.instance) {
             return SoundManager.instance;
         }

@@ -18,7 +18,7 @@ class World {
     constructor(canvas, keyboard, soundManager) {
         this.ctx = canvas.getContext('2d');
         this.keyboard = keyboard;
-        this.soundManager = soundManager;
+        this.soundManager = new SoundManager(this);
         this.canvas = canvas
         this.images = {};
         this.level.world = this;
@@ -206,7 +206,7 @@ class World {
      */
     run() {
         setInterval(() => {
-            this.enemyManager.checkCollisions();
+            this.enemyManager.checkCollisions(this.musicPaused);
             this.checkThrowObjects();
             this.checkForCollectableSpawn();
             this.checkCollectableCollisions();
@@ -225,7 +225,7 @@ class World {
             }
 
             if (this.character.x >= 1300 && !this.bossSpawned) {
-                this.enemyManager.spawnEndboss();
+                this.enemyManager.spawnEndboss(this.musicPaused);
                 clearInterval(spawnInterval);
                 return;
             }

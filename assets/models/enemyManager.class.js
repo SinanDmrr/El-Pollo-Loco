@@ -25,10 +25,13 @@ class EnemyManager {
     }
 
     /**
-     * Spawns the endboss near the character's position and initializes its health bar.
-     * Plays boss-related sound effects if music is not paused.
+     * Spawns an endboss at a specific position relative to the character
+     * and initializes its health bar and status in the game.
+     * Plays a sound when spawning the endboss if music is not paused.
+     * 
+     * @param {boolean} musicPaused - Indicates whether the background music is paused.
      */
-    spawnEndboss() {
+    spawnEndboss(musicPaused) {
         const spawnX = this.character.x + 600;
         const newEndboss = new Endboss();
         newEndboss.x = spawnX;
@@ -36,7 +39,7 @@ class EnemyManager {
         this.level.world.bossSpawned = true;
         this.level.enemies.push(newEndboss);
 
-        if (!this.level.musicPaused) {
+        if (!musicPaused) {
             this.soundManager.play('boss_chicken_start');
             setTimeout(() => {
                 this.soundManager.stop('boss_chicken_start');
@@ -45,10 +48,13 @@ class EnemyManager {
     }
 
     /**
-     * Checks for collisions between the character and enemies in the level.
-     * Handles character hits or chicken deaths based on collision conditions.
+     * Checks for collisions between the character and enemies.
+     * Handles specific scenarios like killing chickens when colliding from the top
+     * or applying damage to the character on general collisions.
+     * 
+     * @param {boolean} musicPaused - Indicates whether the background music is paused.
      */
-    checkCollisions() {
+    checkCollisions(musicPaused) {
         this.level.enemies.forEach((enemy) => {
             if (enemy.isDeadStatus) return;
             if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken) {
@@ -56,7 +62,7 @@ class EnemyManager {
                 return;
             }
             if (!this.character.isDead() && this.character.isColliding(enemy)) {
-                this.handleCharacterHit(enemy);
+                this.handleCharacterHit(enemy, musicPaused);
             }
         });
     }
@@ -84,14 +90,15 @@ class EnemyManager {
      * 
      * @param {Object} enemy - The enemy object that hit the character.
      */
-    handleCharacterHit(enemy) {
+    handleCharacterHit(enemy, musicPaused) {
         if (enemy instanceof Endboss) {
             this.character.hit(40);
         } else {
             this.character.hit(20);
         }
         this.healthBar.setPercentage(this.character.energy);
-        this.soundManager.play('hurt');
+        musicPaused ? this.soundManager.stop('hurt') : this.soundManager.play('hurt');
+        // this.soundManager.play('hurt');
         if (this.character.isDead() && !this.level.gameOver) {
             setTimeout(() => {
                 this.level.world.gameOver = true;
