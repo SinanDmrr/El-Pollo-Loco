@@ -159,7 +159,6 @@ class UIManager {
         this.ctx.fillStyle = 'black';
         this.ctx.fill();
         this.ctx.closePath();
-
         this.ctx.beginPath();
         this.ctx.arc(icon.x + 20, icon.y + 20, 30, 0, 2 * Math.PI);
         this.ctx.fillStyle = 'orange';

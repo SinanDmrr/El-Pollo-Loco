@@ -52,8 +52,6 @@ class World {
         } else if (this.gameRunning) {
             this.soundManager.checkMusic(this.musicPaused);
             this.uiManager.drawBackgroundAndObjects();
-            //TODO Raus löschen wenn fertig getestet
-            this.drawObjectFrames();
             this.uiManager.drawScreenIcons();
             this.animationFrameId = requestAnimationFrame(() => {
                 this.draw();
