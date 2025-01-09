@@ -14,7 +14,9 @@ class UIManager {
             home: 'assets/img/10_icons/home.png',
             instruction: 'assets/img/10_icons/instruction.png',
             play: 'assets/img/10_icons/play.png',
-            music: 'assets/img/10_icons/music.png',
+            reset: 'assets/img/10_icons/restart.png',
+            musicMute: 'assets/img/10_icons/musicMute.png',
+            musicPlay: 'assets/img/10_icons/musicPlay.png'
         };
         for (const [name, path] of Object.entries(iconPaths)) {
             const img = new Image();
@@ -105,14 +107,21 @@ class UIManager {
     drawScreenIcons() {
         let icons;
         if (this.world.gameOver || this.world.endbossDefeated) {
-            icons = [{ img: this.images.home, x: 720 / 2 - 25, y: 50 }];
+            icons = [
+                { img: this.images.home, x: 720 / 2 - 25, y: 50 },
+                { img: this.images.reset, x: 920 / 2 - 25, y: 50 }
+            ];
         } else if (!this.world.gameRunning) {
             icons = [
                 { img: this.images.instruction, x: 0 + 25, y: 50 },
                 { img: this.images.play, x: 720 / 2 - 25, y: 50 }
             ];
         } else if (this.world.gameRunning) {
-            icons = [{ img: this.images.music, x: 720 / 2 - 25, y: 50 }];
+            if (this.world.musicPaused) {
+                icons = [{ img: this.images.musicMute, x: 720 / 2 - 25, y: 50 }];
+            } else {
+                icons = [{ img: this.images.musicPlay, x: 720 / 2 - 25, y: 50 }];
+            }
         }
         this.iconsStyling(icons);
     }

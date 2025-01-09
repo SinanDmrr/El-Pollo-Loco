@@ -36,6 +36,32 @@ class World {
     }
 
     /**
+     * Renders the game screen based on the current game state.
+     * - Displays the "Game Over" screen if the game is over.
+     * - Displays the "Win" screen if the end boss is defeated.
+     * - Displays the "Start" screen if the game is not running.
+     * - Otherwise, updates and redraws the game objects and background.
+     */
+    draw() {
+        if (this.gameOver) {
+            this.uiManager.drawGameOverScreen();
+        } else if (this.endbossDefeated) {
+            this.uiManager.drawWinScreen();
+        } else if (!this.gameRunning) {
+            this.uiManager.drawStartScreen();
+        } else if (this.gameRunning) {
+            this.soundManager.checkMusic(this.musicPaused);
+            this.uiManager.drawBackgroundAndObjects();
+            //TODO Raus löschen wenn fertig getestet
+            this.drawObjectFrames();
+            this.uiManager.drawScreenIcons();
+            this.animationFrameId = requestAnimationFrame(() => {
+                this.draw();
+            });
+        }
+    }
+
+    /**
      * Toggles the music pause state and updates localStorage.
      */
     pauseMusic() {
@@ -78,6 +104,10 @@ class World {
                 this.soundManager.stop('chicken');
                 break;
             case 'play':
+                this.resetWorld.resetGame();
+                this.soundManager.stop('game_lose');
+                this.soundManager.stop('game_win');
+                this.soundManager.stop('chicken');
                 this.gameRunning = true;
                 this.draw();
                 this.spawnChicken();
@@ -118,6 +148,10 @@ class World {
         let icons = [];
         if (this.gameOver || this.endbossDefeated) {
             icons.push({ x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' });
+            icons = [
+                { x: 720 / 2, y: 50 + 25, radius: 32, name: 'home' },
+                { x: 920 / 2, y: 50 + 25, radius: 32, name: 'play' }
+            ];
         } else if (!this.gameRunning) {
             icons = [
                 { x: 50, y: 50 + 25, radius: 32, name: 'instruction' },
@@ -167,30 +201,6 @@ class World {
             const isHovering = this.checkHovering(icons, mouseX, mouseY);
             this.canvas.style.cursor = isHovering ? 'pointer' : 'default';
         });
-    }
-
-    /**
-     * Renders the game screen based on the current game state.
-     * - Displays the "Game Over" screen if the game is over.
-     * - Displays the "Win" screen if the end boss is defeated.
-     * - Displays the "Start" screen if the game is not running.
-     * - Otherwise, updates and redraws the game objects and background.
-     */
-    draw() {
-        if (this.gameOver) {
-            this.uiManager.drawGameOverScreen();
-        } else if (this.endbossDefeated) {
-            this.uiManager.drawWinScreen();
-        } else if (!this.gameRunning) {
-            this.uiManager.drawStartScreen();
-        } else if (this.gameRunning) {
-            this.soundManager.checkMusic(this.musicPaused);
-            this.uiManager.drawBackgroundAndObjects();
-            this.uiManager.drawScreenIcons();
-            this.animationFrameId = requestAnimationFrame(() => {
-                this.draw();
-            });
-        }
     }
 
     /**

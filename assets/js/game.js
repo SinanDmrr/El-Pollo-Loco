@@ -58,7 +58,7 @@ function checkOrientation() {
         warning.classList.add('hidden');
         canvas.classList.remove('hidden');
 
-        if (window.innerHeight <= 1024) {
+        if (window.innerHeight <= 1024 && window.innerWidth <= 1366) {
             controls.style.display = 'flex';
         } else {
             controls.style.display = 'none';

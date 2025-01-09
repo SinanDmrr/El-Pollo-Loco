@@ -65,50 +65,40 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks if the object is colliding with another object from the top.
+     * Checks if the object is colliding with another object, optionally from the top.
      * @param {Object} mo - The other object to check collision with.
-     * @returns {boolean} True if colliding from the top, false otherwise.
-     */
-    isCollidingFromTop(mo) {
-        const characterLeft = this.x + this.offsetX;
-        const characterRight = characterLeft + (this.width - this.offsetWidth);
-        const characterTop = this.y;
-        const characterBottom = this.y + this.height;
-        const moLeft = mo.x + 10;
-        const moRight = mo.x + mo.width;
-        const moTop = mo.y;
-
-        return (
-            this.isAboveGround() &&
-            this.speedY < 0 &&
-            characterRight > moLeft &&
-            characterLeft < moRight &&
-            characterBottom > moTop &&
-            characterTop < moTop &&
-            this.y < mo.y
-        );
-    }
-
-    /**
-     * Checks if the object is colliding with another object.
-     * @param {Object} mo - The other object to check collision with.
+     * @param {boolean} [fromTop=false] - Whether to check collision specifically from the top.
      * @returns {boolean} True if colliding, false otherwise.
      */
-    isColliding(mo) {
+    isColliding(mo, fromTop = false) {
         const moLeft = mo.x;
-        const moRight = mo.x + mo.width;
+        const moRight = mo.x + mo.width - 20;
         const moTop = mo.y;
         const moBottom = mo.y + mo.height;
         const characterLeft = this.x + this.offsetX;
         const characterRight = characterLeft + (this.width - this.offsetWidth);
         const characterTop = this.y;
         const characterBottom = this.y + this.height;
-        return (
+
+        const isColliding = (
             characterRight > moLeft &&
             characterLeft < moRight &&
             characterBottom > moTop &&
             characterTop < moBottom
         );
+
+        if (fromTop) {
+            return (
+                isColliding &&
+                this.isAboveGround() &&
+                this.speedY < 0 &&
+                characterBottom > moTop &&
+                characterTop < moTop &&
+                this.y < mo.y
+            );
+        }
+
+        return isColliding;
     }
 
     /**

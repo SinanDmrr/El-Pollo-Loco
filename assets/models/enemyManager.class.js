@@ -14,7 +14,8 @@ class EnemyManager {
      * Each chicken is assigned a unique ID and added to the list of enemies in the level.
      */
     spawnChickens() {
-        const numberOfChickens = Math.floor(Math.random() * 2) + 1;
+        // const numberOfChickens = Math.floor(Math.random() * 2) + 1;
+        const numberOfChickens = Math.floor(Math.random() * 0.5) + 1;
         const baseSpawnX = this.character.x + 800;
         for (let i = 0; i < numberOfChickens; i++) {
             const newChicken = new Chicken();
@@ -57,10 +58,14 @@ class EnemyManager {
     checkCollisions(musicPaused) {
         this.level.enemies.forEach((enemy) => {
             if (enemy.isDeadStatus) return;
-            if (this.character.isCollidingFromTop(enemy) && enemy instanceof Chicken) {
+
+            // Check for collision from the top
+            if (this.character.isColliding(enemy, true) && enemy instanceof Chicken) {
                 this.handleChickenDeath(enemy);
                 return;
             }
+
+            // Check for general collision
             if (!this.character.isDead() && this.character.isColliding(enemy)) {
                 this.handleCharacterHit(enemy, musicPaused);
             }

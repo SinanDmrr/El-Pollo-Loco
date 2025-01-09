@@ -1,8 +1,8 @@
 class Character extends MovableObject {
     x = -1000;
-    offsetX = 20;
+    offsetX = 25;
     y = 220;
-    width = 120;
+    width = 100;
     offsetWidth = 50;
     height = 200;
     currentImage = 0;
